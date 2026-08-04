@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <div class="card shadow">
 
-<div class="card-header text-center bg-primary text-white">
+<div class="card-header text-center text-white" style="background-color:#e91e63;">
 
 <h3>Student Registration</h3>
 
@@ -177,7 +177,9 @@ required>
 
 <button
 type="submit"
-class="btn btn-primary w-100">
+class="btn w-100 text-white"
+style="background-color:#e91e63;">
+
 
 Register
 
