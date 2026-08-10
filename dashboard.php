@@ -2,7 +2,7 @@
 session_start();
 
 if (!isset($_SESSION['student_id'])) {
-    header('Location: login.php');
+    header("Location: login.php");
     exit;
 }
 
@@ -13,53 +13,115 @@ $student_name = $_SESSION['student_name'];
 <html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title>Student Dashboard</title>
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Dashboard</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-light">
+<body>
 
-<div class="container mt-5">
+<div class="d-flex">
 
-<div class="card shadow">
+    <!-- Sidebar -->
+    <div class="bg-dark text-white p-3 vh-100"
+         style="width: 250px; position: fixed; left: 0; top: 0;">
 
-<div class="card-header text-center text-white" style="background-color:#e91e63;">
+        <h4 class="text-center mb-4">
+            Student Portal
+        </h4>
 
-<h2>Student Dashboard</h2>
+        <ul class="nav flex-column">
 
-</div>
+            <li class="nav-item mb-2">
+                <a href="dashboard.php" class="nav-link text-white">
+                    Dashboard
+                </a>
+            </li>
 
-<div class="card-body text-center">
+            <li class="nav-item mb-2">
+                <a href="courses.php" class="nav-link text-white">
+                    My Courses
+                </a>
+            </li>
 
-<h3>
+            <li class="nav-item mb-2">
+                <a href="assignment.php" class="nav-link text-white">
+                    Assignments
+                </a>
+            </li>
 
-Welcome,
+            <li class="nav-item mb-2">
+                <a href="result.php" class="nav-link text-white">
+                    My Results
+                </a>
+            </li>
 
-<?php echo htmlspecialchars($student_name); ?>!
+            <li class="nav-item mb-2">
+                <a href="notices.php" class="nav-link text-white">
+                    Notices
+                </a>
+            </li>
 
-</h3>
+            <li class="nav-item mt-3">
+                <a href="logout.php" class="nav-link text-danger">
+                    Logout
+                </a>
+            </li>
 
-<br>
+        </ul>
 
-<a href="logout.php" class="btn btn-danger">
+    </div>
 
-Logout
 
-</a>
+    <!-- Main Content -->
+    <div class="p-4"
+         style="margin-left: 250px; width: calc(100% - 250px);">
 
-</div>
+        <h2>Welcome, <?php echo htmlspecialchars($student_name); ?>!</h2>
 
-</div>
+        <p class="text-muted">
+            Welcome to your student dashboard.
+        </p>
+
+        <hr>
+
+        <div class="row mt-4">
+
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5>Total Courses</h5>
+                        <h2>0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5>Pending Assignments</h5>
+                        <h2>0</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5>Latest Notice</h5>
+                        <p>No notices yet.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
 </body>
-
 </html>
