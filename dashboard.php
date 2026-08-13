@@ -1,42 +1,25 @@
 <?php
-
 require_once 'config/db.php';
-
 session_start();
-
-
 // Check if student is logged in
 if (!isset($_SESSION['student_id'])) {
-
     header("Location: login.php");
     exit;
-
 }
-
-
 // Get student information
 $student_id = $_SESSION['student_id'];
 $student_name = $_SESSION['student_name'];
-
-
 // ==================================================
 // TOTAL COURSES
 // ==================================================
-
 $sql = "SELECT COUNT(*) AS total_courses
         FROM courses";
-
 $result_courses = mysqli_query($conn, $sql);
-
 $row_courses = mysqli_fetch_assoc($result_courses);
-
 $total_courses = $row_courses['total_courses'];
-
-
 // ==================================================
 // LATEST NOTICE
 // ==================================================
-
 $sql = "SELECT title, content, created_at
         FROM notices
         ORDER BY created_at DESC
@@ -45,299 +28,147 @@ $sql = "SELECT title, content, created_at
 $result_latest = mysqli_query($conn, $sql);
 
 $latest_notice = mysqli_fetch_assoc($result_latest);
-
-
 // ==================================================
 // RECENT 3 NOTICES
 // ==================================================
-
 $sql = "SELECT title, content, created_at
         FROM notices
         ORDER BY created_at DESC
         LIMIT 3";
-
 $result_recent = mysqli_query($conn, $sql);
-
 ?>
 
-
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Student Dashboard</title>
-
-
-    <!-- Bootstrap CSS -->
-
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
-
 </head>
-
-
 <body>
-
-
-<!-- ==================================================
-     SIDEBAR
-================================================== -->
-
 <div
     class="bg-dark text-white p-3 vh-100"
     style="width: 250px; position: fixed; left: 0; top: 0;"
 >
-
-
     <h4 class="text-center mb-4">
-
         Student Portal
-
     </h4>
-
-
     <ul class="nav flex-column">
-
-
-        <!-- Dashboard -->
-
         <li class="nav-item mb-2">
-
             <a
                 href="dashboard.php"
                 class="nav-link text-white"
             >
-
                 Dashboard
-
             </a>
-
         </li>
-
-
-        <!-- My Courses -->
-
         <li class="nav-item mb-2">
-
             <a
                 href="courses.php"
                 class="nav-link text-white"
             >
-
                 My Courses
-
             </a>
-
         </li>
-
-
         <!-- Assignments -->
-
         <li class="nav-item mb-2">
-
             <a
                 href="assignment.php"
                 class="nav-link text-white"
             >
-
                 Assignments
-
             </a>
-
         </li>
-
-
         <!-- My Results -->
-
         <li class="nav-item mb-2">
-
             <a
                 href="result.php"
                 class="nav-link text-white"
             >
-
                 My Results
-
             </a>
-
         </li>
-
-
         <!-- Notices -->
-
         <li class="nav-item mb-2">
-
             <a
                 href="notices.php"
                 class="nav-link text-white"
             >
-
                 Notices
 
             </a>
-
         </li>
-
-
         <!-- Logout -->
-
         <li class="nav-item mt-3">
-
             <a
                 href="logout.php"
                 class="nav-link text-danger"
             >
-
                 Logout
 
             </a>
-
         </li>
-
-
     </ul>
-
-
 </div>
-
-
-
-<!-- ==================================================
-     MAIN CONTENT
-================================================== -->
 
 <div
     class="p-4"
     style="margin-left: 250px; width: calc(100% - 250px);"
 >
-
-
-    <!-- Welcome Message -->
-
     <h2>
-
         Welcome, <?php echo htmlspecialchars($student_name); ?>!
-
     </h2>
-
-
     <p class="text-muted">
-
         Welcome to your student dashboard.
-
     </p>
-
-
     <hr>
-
-
-
-    <!-- ==================================================
-         STATISTICS CARDS
-    ================================================== -->
-
     <div class="row mt-4">
-
-
-        <!-- Total Courses -->
-
         <div class="col-md-4">
-
             <div class="card shadow-sm">
-
                 <div class="card-body">
-
                     <h5>Total Courses</h5>
-
                     <h2>
-
                         <?php echo $total_courses; ?>
-
                     </h2>
-
                 </div>
-
             </div>
-
         </div>
-
-
-
-        <!-- Pending Assignments -->
-
         <div class="col-md-4">
-
             <div class="card shadow-sm">
-
                 <div class="card-body">
-
                     <h5>Pending Assignments</h5>
-
                     <h2>0</h2>
-
                     <p class="text-muted">
-
                         Coming soon
-
                     </p>
-
                 </div>
-
             </div>
-
         </div>
-
-
-
-        <!-- Latest Notice -->
-
         <div class="col-md-4">
-
             <div class="card shadow-sm">
-
                 <div class="card-body">
-
-
                     <h5>Latest Notice</h5>
-
-
                     <?php if ($latest_notice) { ?>
-
-
                         <h6>
-
                             <?php
                             echo htmlspecialchars(
                                 $latest_notice['title']
                             );
                             ?>
-
                         </h6>
-
-
                         <p>
-
                             <?php
                             echo htmlspecialchars(
                                 $latest_notice['content']
                             );
                             ?>
-
                         </p>
-
-
                         <small class="text-muted">
-
                             Posted on:
-
                             <?php
                             echo date(
                                 'd M Y',
@@ -346,86 +177,40 @@ $result_recent = mysqli_query($conn, $sql);
                                 )
                             );
                             ?>
-
                         </small>
-
-
                     <?php } else { ?>
-
-
                         <p>
-
                             No notices yet.
-
                         </p>
-
-
                     <?php } ?>
-
-
                 </div>
-
             </div>
-
         </div>
-
-
     </div>
-
-
-
-    <!-- ==================================================
-         RECENT NOTICES
-    ================================================== -->
-
     <div class="mt-5">
-
-
         <h4>
-
             Recent Notices
-
         </h4>
-
-
         <?php if (mysqli_num_rows($result_recent) > 0) { ?>
-
-
             <?php while ($notice = mysqli_fetch_assoc($result_recent)) { ?>
-
-
                 <div class="card mb-3 shadow-sm">
-
-
                     <div class="card-body">
-
-
                         <h5>
-
                             <?php
                             echo htmlspecialchars(
                                 $notice['title']
                             );
                             ?>
-
                         </h5>
-
-
                         <p>
-
                             <?php
                             echo htmlspecialchars(
                                 $notice['content']
                             );
                             ?>
-
                         </p>
-
-
                         <small class="text-muted">
-
                             Posted on:
-
                             <?php
                             echo date(
                                 'd M Y',
@@ -434,76 +219,33 @@ $result_recent = mysqli_query($conn, $sql);
                                 )
                             );
                             ?>
-
                         </small>
-
-
                     </div>
-
-
                 </div>
-
-
             <?php } ?>
-
-
         <?php } else { ?>
-
-
             <div class="alert alert-info">
-
                 No recent notices available.
-
             </div>
-
-
         <?php } ?>
-
-
     </div>
-
-
-
-    <!-- ==================================================
-         QUICK LINKS
-    ================================================== -->
-
     <div class="mt-4">
-
-
         <h4>
-
             Quick Links
-
         </h4>
-
-
         <a
             href="courses.php"
             class="btn btn-primary me-2"
         >
-
             My Courses
-
         </a>
-
-
         <a
             href="assignment.php"
             class="btn btn-success"
         >
-
             Assignments
-
         </a>
-
-
     </div>
-
-
 </div>
-
-
 </body>
-
 </html>
