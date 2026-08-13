@@ -1,10 +1,10 @@
 <?php
-session_start()
+session_start();
 if (!isset($_SESSION['student_id'])) {
     header("Location: login.php");
     exit;
 }
-require_once "config/db.php"
+require_once "config/db.php";
 $query = "SELECT * FROM courses ORDER BY created_at DESC";
 $result = mysqli_query($conn, $query);
 ?>
