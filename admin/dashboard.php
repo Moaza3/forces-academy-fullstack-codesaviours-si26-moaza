@@ -54,7 +54,7 @@ $total_notices = $notice_data["total_notices"];
                     <a href="courses.php" class="nav-link text-white mb-2">Manage Courses</a>
                     <a href="assignments.php" class="nav-link text-white mb-2">Manage Assignments</a>
                     <a href="results.php" class="nav-link text-white mb-2">Upload Results</a>
-                    <a href="notice.php" class="nav-link text-white mb-2">Post Notice</a>
+                    <a href="notices.php" class="nav-link text-white mb-2">Post Notice</a>
                     <a href="logout.php" class="nav-link text-danger">Logout</a>
                 </div>
             </div>
