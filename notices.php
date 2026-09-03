@@ -36,7 +36,7 @@ if (!$result) {
                 <a href="assignment.php" class="nav-link text-white">Assignments</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="result.php" class="nav-link text-white">My Results</a>
+                <a href="results.php" class="nav-link text-white">My Results</a>
             </li>
             <li class="nav-item mb-2">
                 <a href="notices.php" class="nav-link text-white">Notices</a>
