@@ -7,8 +7,8 @@ if (!isset($_SESSION['student_id'])) {
     exit;
 }
 
-$student_id = $_SESSION['student_id'];
-$student_name = $_SESSION['student_name'];
+$student_id = (int)$_SESSION['student_id'];
+$student_name = $_SESSION['student_name'] ?? 'Student';
 
 $sql = "SELECT COUNT(*) AS total_courses FROM courses";
 $result_courses = mysqli_query($conn, $sql);
@@ -19,6 +19,21 @@ if (!$result_courses) {
 
 $row_courses = mysqli_fetch_assoc($result_courses);
 $total_courses = $row_courses['total_courses'];
+
+$sql_pending = "SELECT COUNT(*) AS total_pending 
+                FROM assignment 
+                WHERE id NOT IN (
+                    SELECT assignment_id 
+                    FROM submissions 
+                    WHERE student_id = $student_id
+                )";
+$result_pending = mysqli_query($conn, $sql_pending);
+$pending_assignments = 0;
+
+if ($result_pending) {
+    $row_pending = mysqli_fetch_assoc($result_pending);
+    $pending_assignments = $row_pending['total_pending'];
+}
 
 $sql = "SELECT title, content, created_at FROM notices ORDER BY created_at DESC LIMIT 1";
 $result_latest = mysqli_query($conn, $sql);
@@ -51,6 +66,9 @@ if (!$result_recent) {
         <ul class="nav flex-column">
             <li class="nav-item mb-2">
                 <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="profile.php" class="nav-link text-white">My Profile</a>
             </li>
             <li class="nav-item mb-2">
                 <a href="courses.php" class="nav-link text-white">My Courses</a>
@@ -92,8 +110,8 @@ if (!$result_recent) {
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h5>Pending Assignments</h5>
-                        <h2>0</h2>
-                        <p class="text-muted">Coming soon</p>
+                        <h2 class="text-warning"><?php echo $pending_assignments; ?></h2>
+                        <p class="text-muted">Assignments remaining to submit</p>
                     </div>
                 </div>
             </div>
@@ -141,7 +159,8 @@ if (!$result_recent) {
             <h4>Quick Links</h4>
             <a href="courses.php" class="btn btn-primary me-2">My Courses</a>
             <a href="timetable.php" class="btn btn-info text-white me-2">Timetable</a>
-            <a href="assignment.php" class="btn btn-success">Assignments</a>
+            <a href="assignment.php" class="btn btn-success me-2">Assignments</a>
+            <a href="profile.php" class="btn btn-secondary">My Profile</a>
         </div>
     </div>
 
