@@ -47,13 +47,13 @@ if (!$result) {
                 <a href="courses.php" class="nav-link text-white">My Courses</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="timetable.php" class="nav-link text-white">📅 Timetable</a>
+                <a href="timetable.php" class="nav-link text-white">Timetable</a>
             </li>
             <li class="nav-item mb-2">
                 <a href="assignment.php" class="nav-link text-white">Assignment</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="result.php" class="nav-link text-white">My Results</a>
+                <a href="results.php" class="nav-link text-white">My Results</a>
             </li>
             <li class="nav-item mb-2">
                 <a href="notices.php" class="nav-link text-white">Notices</a>

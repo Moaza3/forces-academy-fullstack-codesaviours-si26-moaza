@@ -140,7 +140,7 @@ if (!$result_recent) {
         <div class="mt-4">
             <h4>Quick Links</h4>
             <a href="courses.php" class="btn btn-primary me-2">My Courses</a>
-            <a href="timetable.php" class="btn btn-info text-white me-2">📅 Timetable</a>
+            <a href="timetable.php" class="btn btn-info text-white me-2">Timetable</a>
             <a href="assignment.php" class="btn btn-success">Assignments</a>
         </div>
     </div>
