@@ -97,10 +97,13 @@ if (isset($_POST['change_password'])) {
                 <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
             </li>
             <li class="nav-item mb-2">
+                <a href="profile.php" class="nav-link text-white fw-bold">My Profile</a>
+            </li>
+            <li class="nav-item mb-2">
                 <a href="courses.php" class="nav-link text-white">My Courses</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="timetable.php" class="nav-link text-white">📅 Timetable</a>
+                <a href="timetable.php" class="nav-link text-white">Timetable</a>
             </li>
             <li class="nav-item mb-2">
                 <a href="assignment.php" class="nav-link text-white">Assignments</a>
@@ -110,9 +113,6 @@ if (isset($_POST['change_password'])) {
             </li>
             <li class="nav-item mb-2">
                 <a href="notices.php" class="nav-link text-white">Notices</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="profile.php" class="nav-link text-white fw-bold">👤 My Profile</a>
             </li>
             <li class="nav-item mt-3">
                 <a href="logout.php" class="nav-link text-danger">Logout</a>
