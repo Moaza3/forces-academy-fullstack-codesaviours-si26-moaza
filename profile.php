@@ -15,7 +15,7 @@ $student_id = (int)$_SESSION['student_id'];
 $success_msg = "";
 $error_msg = "";
 
-$stmt = mysqli_prepare($conn, "SELECT id, name, email, roll_number, class, password FROM students WHERE id = ?");
+$stmt = mysqli_prepare($conn, "SELECT id, full_name, email, roll_number, class, password FROM students WHERE id = ?");
 if (!$stmt) {
     die("Prepare Error: " . mysqli_error($conn));
 }
@@ -30,17 +30,17 @@ if (!$student) {
 }
 
 if (isset($_POST['update_profile'])) {
-    $name = trim($_POST['name']);
+    $full_name = trim($_POST['full_name']);
     $email = trim($_POST['email']);
 
-    if (!empty($name) && !empty($email)) {
-        $update_stmt = mysqli_prepare($conn, "UPDATE students SET name = ?, email = ? WHERE id = ?");
-        mysqli_stmt_bind_param($update_stmt, "ssi", $name, $email, $student_id);
+    if (!empty($full_name) && !empty($email)) {
+        $update_stmt = mysqli_prepare($conn, "UPDATE students SET full_name = ?, email = ? WHERE id = ?");
+        mysqli_stmt_bind_param($update_stmt, "ssi", $full_name, $email, $student_id);
 
         if (mysqli_stmt_execute($update_stmt)) {
-            $student['name'] = $name;
+            $student['full_name'] = $full_name;
             $student['email'] = $email;
-            $_SESSION['student_name'] = $name;
+            $_SESSION['student_name'] = $full_name;
             $success_msg = "Profile updated successfully!";
         } else {
             $error_msg = "Failed to update profile. Email might already exist.";
@@ -96,7 +96,7 @@ if (isset($_POST['change_password'])) {
                 <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="results.php" class="nav-link text-white">My Results</a>
+                <a href="profile.php" class="nav-link text-white fw-bold">My Profile</a>
             </li>
             <li class="nav-item mb-2">
                 <a href="courses.php" class="nav-link text-white">My Courses</a>
@@ -108,10 +108,10 @@ if (isset($_POST['change_password'])) {
                 <a href="assignment.php" class="nav-link text-white">Assignments</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="notices.php" class="nav-link text-white">Notices</a>
+                <a href="results.php" class="nav-link text-white">My Results</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="profile.php" class="nav-link text-white fw-bold">My Profile</a>
+                <a href="notices.php" class="nav-link text-white">Notices</a>
             </li>
             <li class="nav-item mt-3">
                 <a href="logout.php" class="nav-link text-danger">Logout</a>
@@ -154,7 +154,7 @@ if (isset($_POST['change_password'])) {
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Full Name</label>
-                                <input type="text" name="name" class="form-control" value="<?php echo htmlspecialchars($student['name'] ?? ''); ?>" required>
+                                <input type="text" name="full_name" class="form-control" value="<?php echo htmlspecialchars($student['full_name'] ?? ''); ?>" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Email Address</label>
