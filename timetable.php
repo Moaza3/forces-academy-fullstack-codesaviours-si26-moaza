@@ -2,7 +2,6 @@
 require_once 'config/db.php';
 session_start();
 
-// Student Login Check
 if (!isset($_SESSION['student_id'])) {
     header("Location: login.php");
     exit;
@@ -10,7 +9,6 @@ if (!isset($_SESSION['student_id'])) {
 
 $student_id = $_SESSION['student_id'];
 
-// Get Logged-in Student Class
 $stmt = mysqli_prepare($conn, "SELECT class FROM students WHERE id = ?");
 mysqli_stmt_bind_param($stmt, "i", $student_id);
 mysqli_stmt_execute($stmt);
@@ -19,10 +17,8 @@ $student_data = mysqli_fetch_assoc($student_res);
 
 $student_class = $student_data['class'] ?? '';
 
-// Days & Default Time Slots Definitions
 $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-// Fetch Timetable Entries for Student's Class
 $timetable_data = [];
 $time_slots = [];
 
@@ -51,19 +47,12 @@ if (!empty($student_class)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Timetable | Forces Academy LMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: Arial, sans-serif; background: #f4f7fb; color: #1e293b; }
-        
-        .topbar {
-            background: linear-gradient(135deg, #123b70, #2563eb);
-            color: white; padding: 18px 40px; display: flex; align-items: center; justify-content: space-between;
-        }
-        .container { width: 92%; max-width: 1250px; margin: 35px auto; }
-        .page-heading h1 { color: #123b70; margin-bottom: 8px; }
-        .page-heading p { color: #64748b; font-size: 15px; margin-bottom: 25px; }
 
-        .card { background: white; border-radius: 18px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); overflow-x: auto; }
+        .card-box { background: white; border-radius: 18px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); overflow-x: auto; }
         
         table { width: 100%; border-collapse: collapse; min-width: 800px; }
         th, td { border: 1px solid #e2e8f0; padding: 15px; text-align: center; vertical-align: top; }
@@ -78,53 +67,79 @@ if (!empty($student_class)) {
 </head>
 <body>
 
-<header class="topbar">
-    <h2>🎓 Forces Academy LMS</h2>
-    <div>Class: <strong><?= htmlspecialchars($student_class); ?></strong></div>
-</header>
-
-<main class="container">
-    <div class="page-heading">
-        <h1>Weekly Timetable Grid</h1>
-        <p>Class Schedule for <?= htmlspecialchars($student_class); ?></p>
+    <div class="bg-dark text-white p-3 vh-100" style="width: 250px; position: fixed; left: 0; top: 0;">
+        <h4 class="text-center mb-4">Student Portal</h4>
+        <ul class="nav flex-column">
+            <li class="nav-item mb-2">
+                <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="courses.php" class="nav-link text-white">My Courses</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="timetable.php" class="nav-link text-white">📅 Timetable</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="assignment.php" class="nav-link text-white">Assignments</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="results.php" class="nav-link text-white">My Results</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="notices.php" class="nav-link text-white">Notices</a>
+            </li>
+            <li class="nav-item mt-3">
+                <a href="logout.php" class="nav-link text-danger">Logout</a>
+            </li>
+        </ul>
     </div>
 
-    <div class="card">
-        <?php if (!empty($time_slots)): ?>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Time Slot</th>
-                        <?php foreach ($days as $day): ?>
-                            <th><?= $day; ?></th>
-                        <?php endforeach; ?>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($time_slots as $slot): ?>
+    <div class="p-4" style="margin-left: 250px; width: calc(100% - 250px);">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h2>Weekly Timetable Grid</h2>
+                <p class="text-muted">Class Schedule for <?= htmlspecialchars($student_class); ?></p>
+            </div>
+            <span class="badge bg-primary fs-6">Class: <?= htmlspecialchars($student_class); ?></span>
+        </div>
+        <hr>
+
+        <div class="card-box mt-4">
+            <?php if (!empty($time_slots)): ?>
+                <table>
+                    <thead>
                         <tr>
-                            <td class="time-col"><?= htmlspecialchars($slot); ?></td>
+                            <th>Time Slot</th>
                             <?php foreach ($days as $day): ?>
-                                <td>
-                                    <?php if (isset($timetable_data[$slot][$day])): ?>
-                                        <div class="slot-card">
-                                            <div class="slot-subject"><?= htmlspecialchars($timetable_data[$slot][$day]['subject']); ?></div>
-                                            <div class="slot-teacher">👨‍🏫 <?= htmlspecialchars($timetable_data[$slot][$day]['teacher']); ?></div>
-                                        </div>
-                                    <?php else: ?>
-                                        <span class="empty-cell">-</span>
-                                    <?php endif; ?>
-                                </td>
+                                <th><?= $day; ?></th>
                             <?php endforeach; ?>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        <?php else: ?>
-            <p style="text-align: center; color: #64748b; padding: 30px;">No timetable entries found for your class.</p>
-        <?php endif; ?>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($time_slots as $slot): ?>
+                            <tr>
+                                <td class="time-col"><?= htmlspecialchars($slot); ?></td>
+                                <?php foreach ($days as $day): ?>
+                                    <td>
+                                        <?php if (isset($timetable_data[$slot][$day])): ?>
+                                            <div class="slot-card">
+                                                <div class="slot-subject"><?= htmlspecialchars($timetable_data[$slot][$day]['subject']); ?></div>
+                                                <div class="slot-teacher">👨‍🏫 <?= htmlspecialchars($timetable_data[$slot][$day]['teacher']); ?></div>
+                                            </div>
+                                        <?php else: ?>
+                                            <span class="empty-cell">-</span>
+                                        <?php endif; ?>
+                                    </td>
+                                <?php endforeach; ?>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <p style="text-align: center; color: #64748b; padding: 30px;">No timetable entries found for your class.</p>
+            <?php endif; ?>
+        </div>
     </div>
-</main>
 
 </body>
 </html>
