@@ -2,21 +2,15 @@
 require_once 'config/db.php';
 session_start();
 
-// Check if student is logged in
 if (!isset($_SESSION['student_id'])) {
     header("Location: login.php");
     exit;
 }
 
-// Get student information
 $student_id = $_SESSION['student_id'];
 $student_name = $_SESSION['student_name'];
 
-// ==================================================
-// TOTAL COURSES
-// ==================================================
-$sql = "SELECT COUNT(*) AS total_courses
-        FROM courses";
+$sql = "SELECT COUNT(*) AS total_courses FROM courses";
 $result_courses = mysqli_query($conn, $sql);
 
 if (!$result_courses) {
@@ -26,14 +20,7 @@ if (!$result_courses) {
 $row_courses = mysqli_fetch_assoc($result_courses);
 $total_courses = $row_courses['total_courses'];
 
-// ==================================================
-// LATEST NOTICE
-// ==================================================
-$sql = "SELECT title, content, created_at
-        FROM notices
-        ORDER BY created_at DESC
-        LIMIT 1";
-
+$sql = "SELECT title, content, created_at FROM notices ORDER BY created_at DESC LIMIT 1";
 $result_latest = mysqli_query($conn, $sql);
 
 if (!$result_latest) {
@@ -42,13 +29,7 @@ if (!$result_latest) {
 
 $latest_notice = mysqli_fetch_assoc($result_latest);
 
-// ==================================================
-// RECENT 3 NOTICES
-// ==================================================
-$sql = "SELECT title, content, created_at
-        FROM notices
-        ORDER BY created_at DESC
-        LIMIT 3";
+$sql = "SELECT title, content, created_at FROM notices ORDER BY created_at DESC LIMIT 3";
 $result_recent = mysqli_query($conn, $sql);
 
 if (!$result_recent) {
@@ -74,19 +55,18 @@ if (!$result_recent) {
             <li class="nav-item mb-2">
                 <a href="courses.php" class="nav-link text-white">My Courses</a>
             </li>
-            <!-- Assignments -->
+            <li class="nav-item mb-2">
+                <a href="timetable.php" class="nav-link text-white">📅 Timetable</a>
+            </li>
             <li class="nav-item mb-2">
                 <a href="assignment.php" class="nav-link text-white">Assignments</a>
             </li>
-            <!-- My Results -->
             <li class="nav-item mb-2">
                 <a href="results.php" class="nav-link text-white">My Results</a>
             </li>
-            <!-- Notices -->
             <li class="nav-item mb-2">
                 <a href="notices.php" class="nav-link text-white">Notices</a>
             </li>
-            <!-- Logout -->
             <li class="nav-item mt-3">
                 <a href="logout.php" class="nav-link text-danger">Logout</a>
             </li>
@@ -160,6 +140,7 @@ if (!$result_recent) {
         <div class="mt-4">
             <h4>Quick Links</h4>
             <a href="courses.php" class="btn btn-primary me-2">My Courses</a>
+            <a href="timetable.php" class="btn btn-info text-white me-2">📅 Timetable</a>
             <a href="assignment.php" class="btn btn-success">Assignments</a>
         </div>
     </div>
