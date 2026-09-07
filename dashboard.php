@@ -59,34 +59,34 @@ if (!$result_recent) {
     <title>Student Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
     <div class="bg-dark text-white p-3 vh-100" style="width: 250px; position: fixed; left: 0; top: 0;">
         <h4 class="text-center mb-4">Student Portal</h4>
         <ul class="nav flex-column">
             <li class="nav-item mb-2">
-                <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
+                <a href="dashboard.php" class="nav-link text-white fw-normal">Dashboard</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="profile.php" class="nav-link text-white">My Profile</a>
+                <a href="profile.php" class="nav-link text-white fw-normal">My Profile</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="courses.php" class="nav-link text-white">My Courses</a>
+                <a href="courses.php" class="nav-link text-white fw-normal">My Courses</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="timetable.php" class="nav-link text-white">Timetable</a>
+                <a href="timetable.php" class="nav-link text-white fw-normal">Timetable</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="assignment.php" class="nav-link text-white">Assignments</a>
+                <a href="assignment.php" class="nav-link text-white fw-normal">Assignments</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="results.php" class="nav-link text-white">My Results</a>
+                <a href="results.php" class="nav-link text-white fw-normal">My Results</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="notices.php" class="nav-link text-white">Notices</a>
+                <a href="notices.php" class="nav-link text-white fw-normal">Notices</a>
             </li>
             <li class="nav-item mt-3">
-                <a href="logout.php" class="nav-link text-danger">Logout</a>
+                <a href="logout.php" class="nav-link text-danger fw-normal">Logout</a>
             </li>
         </ul>
     </div>
@@ -98,7 +98,7 @@ if (!$result_recent) {
 
         <div class="row mt-4">
             <div class="col-md-4">
-                <div class="card shadow-sm">
+                <div class="card shadow-sm border-0">
                     <div class="card-body">
                         <h5>Total Courses</h5>
                         <h2><?php echo $total_courses; ?></h2>
@@ -107,28 +107,27 @@ if (!$result_recent) {
             </div>
 
             <div class="col-md-4">
-                <div class="card shadow-sm">
+                <div class="card shadow-sm border-0">
                     <div class="card-body">
                         <h5>Pending Assignments</h5>
                         <h2 class="text-warning"><?php echo $pending_assignments; ?></h2>
-                        <p class="text-muted">Assignments remaining to submit</p>
+                        <p class="text-muted mb-0">Assignments remaining to submit</p>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-4">
-                <div class="card shadow-sm">
+                <div class="card shadow-sm border-0">
                     <div class="card-body">
                         <h5>Latest Notice</h5>
                         <?php if ($latest_notice) { ?>
                             <h6><?php echo htmlspecialchars($latest_notice['title']); ?></h6>
-                            <p><?php echo htmlspecialchars($latest_notice['content']); ?></p>
+                            <p class="mb-1"><?php echo htmlspecialchars($latest_notice['content']); ?></p>
                             <small class="text-muted">
-                                Posted on:
-                                <?php echo date('d M Y', strtotime($latest_notice['created_at'])); ?>
+                                Posted on: <?php echo date('d M Y', strtotime($latest_notice['created_at'])); ?>
                             </small>
                         <?php } else { ?>
-                            <p>No notices yet.</p>
+                            <p class="mb-0">No notices yet.</p>
                         <?php } ?>
                     </div>
                 </div>
@@ -139,13 +138,12 @@ if (!$result_recent) {
             <h4>Recent Notices</h4>
             <?php if (mysqli_num_rows($result_recent) > 0) { ?>
                 <?php while ($notice = mysqli_fetch_assoc($result_recent)) { ?>
-                    <div class="card mb-3 shadow-sm">
+                    <div class="card mb-3 shadow-sm border-0">
                         <div class="card-body">
                             <h5><?php echo htmlspecialchars($notice['title']); ?></h5>
-                            <p><?php echo htmlspecialchars($notice['content']); ?></p>
+                            <p class="mb-1"><?php echo htmlspecialchars($notice['content']); ?></p>
                             <small class="text-muted">
-                                Posted on:
-                                <?php echo date('d M Y', strtotime($notice['created_at'])); ?>
+                                Posted on: <?php echo date('d M Y', strtotime($notice['created_at'])); ?>
                             </small>
                         </div>
                     </div>
@@ -164,5 +162,6 @@ if (!$result_recent) {
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

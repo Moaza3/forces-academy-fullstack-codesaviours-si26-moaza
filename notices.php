@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 if (!isset($_SESSION['student_id'])) {
     header("Location: login.php");
     exit();
@@ -7,7 +8,7 @@ if (!isset($_SESSION['student_id'])) {
 
 require_once "config/db.php";
 
-$sql = "SELECT * FROM notices ORDER BY created_at DESC";
+$sql = "SELECT id, title, content, posted_by, created_at FROM notices ORDER BY created_at DESC";
 $result = mysqli_query($conn, $sql);
 
 if (!$result) {
@@ -19,36 +20,37 @@ if (!$result) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notice Board</title>
+    <title>Notice Board | Student Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
+
     <div class="bg-dark text-white p-3 vh-100" style="width: 250px; position: fixed; left: 0; top: 0;">
         <h4 class="text-center mb-4">Student Portal</h4>
         <ul class="nav flex-column">
             <li class="nav-item mb-2">
-                <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
+                <a href="dashboard.php" class="nav-link text-white fw-normal">Dashboard</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="profile.php" class="nav-link text-white">My Profile</a>
+                <a href="profile.php" class="nav-link text-white fw-normal">My Profile</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="courses.php" class="nav-link text-white">My Courses</a>
+                <a href="courses.php" class="nav-link text-white fw-normal">My Courses</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="timetable.php" class="nav-link text-white">Timetable</a>
+                <a href="timetable.php" class="nav-link text-white fw-normal">Timetable</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="assignment.php" class="nav-link text-white">Assignments</a>
+                <a href="assignment.php" class="nav-link text-white fw-normal">Assignments</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="results.php" class="nav-link text-white">My Results</a>
+                <a href="results.php" class="nav-link text-white fw-normal">My Results</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="notices.php" class="nav-link text-white">Notices</a>
+                <a href="notices.php" class="nav-link text-white fw-normal">Notices</a>
             </li>
             <li class="nav-item mt-3">
-                <a href="logout.php" class="nav-link text-danger">Logout</a>
+                <a href="logout.php" class="nav-link text-danger fw-normal">Logout</a>
             </li>
         </ul>
     </div>
@@ -56,33 +58,44 @@ if (!$result) {
     <div class="p-4" style="margin-left: 250px; width: calc(100% - 250px);">
         <h2 class="mb-4">Notice Board</h2>
 
-        <?php if (mysqli_num_rows($result) > 0) { ?>
-            <?php while ($notice = mysqli_fetch_assoc($result)) { ?>
-                <div class="card shadow-sm mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <?php echo htmlspecialchars($notice['title']); ?>
-                        </h5>
-                        <p class="card-text">
-                            <?php echo htmlspecialchars($notice['content']); ?>
-                        </p>
-                        <p class="mb-1">
-                            <strong>Posted by:</strong>
-                            <?php echo htmlspecialchars($notice['posted_by']); ?>
-                        </p>
-                        <small class="text-muted">
-                            Posted on:
-                            <?php echo date('d M Y', strtotime($notice['created_at'])); ?>
-                        </small>
+        <?php if (mysqli_num_rows($result) > 0): ?>
+
+            <div class="row">
+                <?php while ($notice = mysqli_fetch_assoc($result)): ?>
+                    <div class="col-12 mb-3">
+                        <div class="card shadow-sm border-0">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title text-primary mb-0">
+                                        <?php echo htmlspecialchars($notice['title']); ?>
+                                    </h5>
+                                    <span class="badge bg-light text-dark border">
+                                        <?php echo date('d M Y, h:i A', strtotime($notice['created_at'])); ?>
+                                    </span>
+                                </div>
+                                <p class="card-text text-secondary mb-3" style="white-space: pre-line;">
+                                    <?php echo htmlspecialchars($notice['content']); ?>
+                                </p>
+                                <div class="border-top pt-2 text-muted small">
+                                    <strong>Posted by:</strong> <?php echo htmlspecialchars($notice['posted_by'] ?? 'Administration'); ?>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            <?php } ?>
-        <?php } else { ?>
-            <div class="alert alert-info">
-                <h5>No Notices Available</h5>
+                <?php endwhile; ?>
+            </div>
+
+        <?php else: ?>
+
+            <div class="alert alert-info border-0 shadow-sm">
+                <h5 class="alert-heading">No Notices Available</h5>
                 <p class="mb-0">There are no notices available at the moment. Please check again later.</p>
             </div>
-        <?php } ?>
+
+        <?php endif; ?>
+
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

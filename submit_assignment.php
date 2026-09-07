@@ -18,7 +18,7 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $assignment_id = (int) $_GET['id'];
 
-/* Get Assignment Details */
+/* Get Assignment Details using Prepared Statement */
 $sql = "SELECT
             assignment.id,
             assignment.title,
@@ -28,10 +28,13 @@ $sql = "SELECT
         FROM assignment
         LEFT JOIN courses
         ON assignment.course_id = courses.id
-        WHERE assignment.id = $assignment_id
+        WHERE assignment.id = ?
         LIMIT 1";
 
-$result = mysqli_query($conn, $sql);
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, "i", $assignment_id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
 
 if (!$result) {
     die("Database Error: " . mysqli_error($conn));
@@ -44,13 +47,10 @@ if (mysqli_num_rows($result) == 0) {
 $assignment = mysqli_fetch_assoc($result);
 
 /* Check If Student Already Submitted */
-$check_sql = "SELECT id
-              FROM submissions
-              WHERE assignment_id = $assignment_id
-              AND student_id = $student_id
-              LIMIT 1";
-
-$check_result = mysqli_query($conn, $check_sql);
+$check_stmt = mysqli_prepare($conn, "SELECT id FROM submissions WHERE assignment_id = ? AND student_id = ? LIMIT 1");
+mysqli_stmt_bind_param($check_stmt, "ii", $assignment_id, $student_id);
+mysqli_stmt_execute($check_stmt);
+$check_result = mysqli_stmt_get_result($check_stmt);
 
 if (!$check_result) {
     die("Submission Check Error: " . mysqli_error($conn));
@@ -70,22 +70,26 @@ if (isset($_POST['submit_assignment'])) {
         if ($file['error'] !== UPLOAD_ERR_OK) {
             $error = "File upload failed.";
         } else {
-            /* Allowed File Types */
+            /* Allowed File Extensions & MIME Types */
             $allowed_extensions = ["pdf", "jpg", "jpeg", "png", "gif", "webp"];
+            $allowed_mimes = ["application/pdf", "image/jpeg", "image/png", "image/gif", "image/webp"];
 
-            /* Get File Extension */
+            /* Get File Extension & MIME type */
             $original_name = basename($file['name']);
             $file_extension = strtolower(pathinfo($original_name, PATHINFO_EXTENSION));
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mime_type = finfo_file($finfo, $file['tmp_name']);
+            finfo_close($finfo);
 
-            /* Validate File Extension */
-            if (!in_array($file_extension, $allowed_extensions)) {
+            /* Validate File Extension & MIME Type */
+            if (!in_array($file_extension, $allowed_extensions) || !in_array($mime_type, $allowed_mimes)) {
                 $error = "Only PDF and image files are allowed.";
             } else {
                 $upload_folder = "uploads/";
 
                 /* Create uploads Folder If It Doesn't Exist */
                 if (!is_dir($upload_folder)) {
-                    if (!mkdir($upload_folder, 0777, true)) {
+                    if (!mkdir($upload_folder, 0755, true)) {
                         $error = "Could not create uploads folder.";
                     }
                 }
@@ -93,18 +97,17 @@ if (isset($_POST['submit_assignment'])) {
                 /* Continue If No Error */
                 if (!isset($error)) {
                     /* Create Unique Filename */
-                    $unique_filename = $student_id . "_" . $assignment_id . "_" . time() . "_" . uniqid() . "." . $file_extension;
+                    $unique_filename = $student_id . "_" . $assignment_id . "_" . time() . "_" . bin2hex(random_bytes(4)) . "." . $file_extension;
                     $file_path = $upload_folder . $unique_filename;
 
                     /* Move Uploaded File */
                     if (move_uploaded_file($file['tmp_name'], $file_path)) {
-                        /* Insert Submission Into Database */
-                        $insert_sql = "INSERT INTO submissions
-                                       (assignment_id, student_id, file_path, status)
-                                       VALUES
-                                       ($assignment_id, $student_id, '$file_path', 'submitted')";
+                        /* Insert Submission Into Database via Prepared Statement */
+                        $insert_sql = "INSERT INTO submissions (assignment_id, student_id, file_path, status) VALUES (?, ?, ?, 'submitted')";
+                        $insert_stmt = mysqli_prepare($conn, $insert_sql);
+                        mysqli_stmt_bind_param($insert_stmt, "iis", $assignment_id, $student_id, $file_path);
 
-                        if (mysqli_query($conn, $insert_sql)) {
+                        if (mysqli_stmt_execute($insert_stmt)) {
                             $success = "Assignment submitted successfully!";
                         } else {
                             /* Delete Uploaded File If Database Insert Fails */
@@ -127,62 +130,74 @@ if (isset($_POST['submit_assignment'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit Assignment</title>
+    <title>Submit Assignment | Student Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
-    <div class="container mt-5">
+    <div class="bg-dark text-white p-3 vh-100" style="width: 250px; position: fixed; left: 0; top: 0;">
+        <h4 class="text-center mb-4">Student Portal</h4>
+        <ul class="nav flex-column">
+            <li class="nav-item mb-2">
+                <a href="dashboard.php" class="nav-link text-white fw-normal">Dashboard</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="profile.php" class="nav-link text-white fw-normal">My Profile</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="courses.php" class="nav-link text-white fw-normal">My Courses</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="timetable.php" class="nav-link text-white fw-normal">Timetable</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="assignment.php" class="nav-link text-white fw-normal">Assignments</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="results.php" class="nav-link text-white fw-normal">My Results</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="notices.php" class="nav-link text-white fw-normal">Notices</a>
+            </li>
+            <li class="nav-item mt-3">
+                <a href="logout.php" class="nav-link text-danger fw-normal">Logout</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="p-4" style="margin-left: 250px; width: calc(100% - 250px);">
         <div class="row justify-content-center">
-            <div class="col-md-7">
-                <div class="card shadow">
-                    <div class="card-body">
+            <div class="col-md-9 col-lg-8">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
                         <h2 class="mb-4">Submit Assignment</h2>
 
-                        <!-- Assignment Title -->
-                        <h5>
-                            <?php echo htmlspecialchars($assignment['title']); ?>
-                        </h5>
+                        <div class="mb-4 pb-3 border-bottom">
+                            <h4 class="text-primary"><?php echo htmlspecialchars($assignment['title']); ?></h4>
+                            <p class="mb-1"><strong>Course:</strong> <?php echo htmlspecialchars($assignment['course_name'] ?? 'N/A'); ?></p>
+                            <p class="mb-1"><strong>Due Date:</strong> <?php echo date("d M Y", strtotime($assignment['due_date'])); ?></p>
+                            <p class="mb-0 text-muted"><strong>Description:</strong> <?php echo htmlspecialchars($assignment['description']); ?></p>
+                        </div>
 
-                        <!-- Course -->
-                        <p>
-                            <strong>Course:</strong>
-                            <?php echo htmlspecialchars($assignment['course_name'] ?? 'N/A'); ?>
-                        </p>
-
-                        <!-- Due Date -->
-                        <p>
-                            <strong>Due Date:</strong>
-                            <?php echo date("d M Y", strtotime($assignment['due_date'])); ?>
-                        </p>
-
-                        <!-- Description -->
-                        <p>
-                            <strong>Description:</strong>
-                            <?php echo htmlspecialchars($assignment['description']); ?>
-                        </p>
-
-                        <!-- Success Message -->
                         <?php if (isset($success)): ?>
-                            <div class="alert alert-success">
+                            <div class="alert alert-success border-0 shadow-sm">
                                 <?php echo htmlspecialchars($success); ?>
-                                <br><br>
-                                <a href="assignment.php" class="btn btn-success">Back to Assignments</a>
+                                <div class="mt-3">
+                                    <a href="assignment.php" class="btn btn-success">Back to Assignments</a>
+                                </div>
                             </div>
                         <?php endif; ?>
 
-                        <!-- Error Message -->
                         <?php if (isset($error)): ?>
-                            <div class="alert alert-danger">
+                            <div class="alert alert-danger border-0 shadow-sm">
                                 <?php echo htmlspecialchars($error); ?>
                             </div>
                         <?php endif; ?>
 
-                        <!-- Upload Form -->
                         <?php if (!isset($success)): ?>
                             <form method="POST" enctype="multipart/form-data">
                                 <div class="mb-3">
-                                    <label for="assignment_file" class="form-label">Select Assignment File</label>
+                                    <label for="assignment_file" class="form-label font-weight-bold">Select Assignment File</label>
                                     <input
                                         type="file"
                                         name="assignment_file"
@@ -191,14 +206,15 @@ if (isset($_POST['submit_assignment'])) {
                                         accept=".pdf,.jpg,.jpeg,.png,.gif,.webp"
                                         required
                                     >
-                                    <small class="text-muted">Allowed: PDF, JPG, JPEG, PNG, GIF, WEBP</small>
+                                    <small class="text-muted d-block mt-1">Allowed formats: PDF, JPG, JPEG, PNG, GIF, WEBP</small>
                                 </div>
 
-                                <button type="submit" name="submit_assignment" class="btn btn-primary">
-                                    Submit Assignment
-                                </button>
-
-                                <a href="assignment.php" class="btn btn-secondary">Back</a>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" name="submit_assignment" class="btn btn-primary">
+                                        Submit Assignment
+                                    </button>
+                                    <a href="assignment.php" class="btn btn-outline-secondary">Back</a>
+                                </div>
                             </form>
                         <?php endif; ?>
                     </div>
@@ -207,5 +223,6 @@ if (isset($_POST['submit_assignment'])) {
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

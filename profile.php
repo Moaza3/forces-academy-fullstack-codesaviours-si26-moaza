@@ -93,28 +93,28 @@ if (isset($_POST['change_password'])) {
         <h4 class="text-center mb-4">Student Portal</h4>
         <ul class="nav flex-column">
             <li class="nav-item mb-2">
-                <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
+                <a href="dashboard.php" class="nav-link text-white fw-normal">Dashboard</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="profile.php" class="nav-link text-white">My Profile</a>
+                <a href="profile.php" class="nav-link text-white fw-normal">My Profile</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="courses.php" class="nav-link text-white">My Courses</a>
+                <a href="courses.php" class="nav-link text-white fw-normal">My Courses</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="timetable.php" class="nav-link text-white">Timetable</a>
+                <a href="timetable.php" class="nav-link text-white fw-normal">Timetable</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="assignment.php" class="nav-link text-white">Assignments</a>
+                <a href="assignment.php" class="nav-link text-white fw-normal">Assignments</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="results.php" class="nav-link text-white">My Results</a>
+                <a href="results.php" class="nav-link text-white fw-normal">My Results</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="notices.php" class="nav-link text-white">Notices</a>
+                <a href="notices.php" class="nav-link text-white fw-normal">Notices</a>
             </li>
             <li class="nav-item mt-3">
-                <a href="logout.php" class="nav-link text-danger">Logout</a>
+                <a href="logout.php" class="nav-link text-danger fw-normal">Logout</a>
             </li>
         </ul>
     </div>
