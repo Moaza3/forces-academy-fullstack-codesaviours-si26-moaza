@@ -3,6 +3,7 @@
 require_once '../config/db.php';
 session_start();
 
+
 // Add timetable entry
 if (isset($_POST['add_timetable'])) {
 
@@ -34,6 +35,7 @@ if (isset($_POST['add_timetable'])) {
     exit;
 }
 
+
 // Delete timetable entry
 if (isset($_GET['delete'])) {
 
@@ -50,6 +52,7 @@ if (isset($_GET['delete'])) {
     header("Location: timetable.php");
     exit;
 }
+
 
 // Get all timetable entries
 $result = mysqli_query(
@@ -82,6 +85,7 @@ $result = mysqli_query(
             background: #f4f7fb;
             color: #1e293b;
         }
+
 
         /* TOP HEADER */
 
@@ -125,6 +129,7 @@ $result = mysqli_query(
             font-size: 14px;
         }
 
+
         /* MAIN */
 
         .container {
@@ -147,6 +152,7 @@ $result = mysqli_query(
             color: #64748b;
             font-size: 15px;
         }
+
 
         /* CARDS */
 
@@ -183,6 +189,7 @@ $result = mysqli_query(
             font-size: 20px;
             color: #123b70;
         }
+
 
         /* FORM */
 
@@ -251,6 +258,7 @@ $result = mysqli_query(
             transform: translateY(-1px);
             box-shadow: 0 6px 15px rgba(37, 99, 235, 0.25);
         }
+
 
         /* TABLE */
 
@@ -331,6 +339,7 @@ $result = mysqli_query(
             background: #fee2e2;
         }
 
+
         /* EMPTY STATE */
 
         .empty-state {
@@ -361,6 +370,7 @@ $result = mysqli_query(
             font-size: 14px;
         }
 
+
         /* FOOTER */
 
         footer {
@@ -369,6 +379,7 @@ $result = mysqli_query(
             color: #94a3b8;
             font-size: 13px;
         }
+
 
         /* RESPONSIVE */
 
@@ -401,7 +412,9 @@ $result = mysqli_query(
 
 </head>
 
+
 <body>
+
 
 <!-- HEADER -->
 
@@ -422,9 +435,11 @@ $result = mysqli_query(
 </header>
 
 
+
 <!-- MAIN CONTENT -->
 
 <main class="container">
+
 
     <div class="page-heading">
 
@@ -435,6 +450,7 @@ $result = mysqli_query(
         </p>
 
     </div>
+
 
 
     <!-- ADD TIMETABLE CARD -->
@@ -456,25 +472,22 @@ $result = mysqli_query(
 
                 <div class="form-grid">
 
+
                     <!-- CLASS -->
 
                     <div class="form-group">
 
                         <label>Select Class</label>
 
-                        <select name="class" required>
-
-                            <option value="">Choose Class</option>
-
-                            <option value="Class 1">Class 1</option>
-                            <option value="Class 2">Class 2</option>
-                            <option value="Class 3">Class 3</option>
-                            <option value="Class 4">Class 4</option>
-                            <option value="Class 5">Class 5</option>
-
-                        </select>
+                        <input
+                            type="text"
+                            name="class"
+                            placeholder="Enter class"
+                            required
+                        >
 
                     </div>
+
 
 
                     <!-- DAY -->
@@ -499,6 +512,7 @@ $result = mysqli_query(
                     </div>
 
 
+
                     <!-- TIME -->
 
                     <div class="form-group">
@@ -513,6 +527,7 @@ $result = mysqli_query(
                         >
 
                     </div>
+
 
 
                     <!-- SUBJECT -->
@@ -531,6 +546,7 @@ $result = mysqli_query(
                     </div>
 
 
+
                     <!-- TEACHER -->
 
                     <div class="form-group">
@@ -547,6 +563,7 @@ $result = mysqli_query(
                     </div>
 
 
+
                     <!-- BUTTON -->
 
                     <div class="form-group button-area">
@@ -561,6 +578,7 @@ $result = mysqli_query(
 
                     </div>
 
+
                 </div>
 
             </form>
@@ -568,6 +586,7 @@ $result = mysqli_query(
         </div>
 
     </div>
+
 
 
     <!-- TABLE CARD -->
@@ -613,36 +632,50 @@ $result = mysqli_query(
                             <tr>
 
                                 <td>
+
                                     <span class="id-badge">
                                         #<?= $row['id']; ?>
                                     </span>
+
                                 </td>
 
+
                                 <td>
+
                                     <span class="class-badge">
                                         <?= htmlspecialchars($row['class']); ?>
                                     </span>
+
                                 </td>
 
+
                                 <td>
+
                                     <span class="day-badge">
                                         <?= htmlspecialchars($row['day']); ?>
                                     </span>
+
                                 </td>
+
 
                                 <td>
                                     <?= htmlspecialchars($row['time_slot']); ?>
                                 </td>
 
+
                                 <td>
+
                                     <strong>
                                         <?= htmlspecialchars($row['subject']); ?>
                                     </strong>
+
                                 </td>
+
 
                                 <td>
                                     <?= htmlspecialchars($row['teacher']); ?>
                                 </td>
+
 
                                 <td>
 
@@ -686,7 +719,9 @@ $result = mysqli_query(
 
     </div>
 
+
 </main>
+
 
 
 <footer>
@@ -694,6 +729,7 @@ $result = mysqli_query(
     Forces Academy LMS © 2026
 
 </footer>
+
 
 </body>
 
