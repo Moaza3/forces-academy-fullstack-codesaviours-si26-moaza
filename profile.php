@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 
 if (!isset($_SESSION['student_id'])) {
@@ -8,22 +11,24 @@ if (!isset($_SESSION['student_id'])) {
 
 require_once "config/db.php";
 
-$student_id = (int) $_SESSION['student_id'];
+$student_id = (int)$_SESSION['student_id'];
 $success_msg = "";
 $error_msg = "";
 
-// 1. Fetch Current Student Details (Point 7)
 $stmt = mysqli_prepare($conn, "SELECT id, name, email, roll_number, class, password FROM students WHERE id = ?");
+if (!$stmt) {
+    die("Prepare Error: " . mysqli_error($conn));
+}
+
 mysqli_stmt_bind_param($stmt, "i", $student_id);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $student = mysqli_fetch_assoc($result);
 
 if (!$student) {
-    die("Student record not found.");
+    die("Student record not found for ID: " . $student_id);
 }
 
-// 2. Handle Profile Info Update (Point 8 & 11)
 if (isset($_POST['update_profile'])) {
     $name = trim($_POST['name']);
     $email = trim($_POST['email']);
@@ -35,10 +40,7 @@ if (isset($_POST['update_profile'])) {
         if (mysqli_stmt_execute($update_stmt)) {
             $student['name'] = $name;
             $student['email'] = $email;
-            
-            // Point 11: Update Session Data
             $_SESSION['student_name'] = $name;
-            
             $success_msg = "Profile updated successfully!";
         } else {
             $error_msg = "Failed to update profile. Email might already exist.";
@@ -48,7 +50,6 @@ if (isset($_POST['update_profile'])) {
     }
 }
 
-// 3. Handle Password Change (Point 9 & 10)
 if (isset($_POST['change_password'])) {
     $current_password = $_POST['current_password'];
     $new_password = $_POST['new_password'];
@@ -59,7 +60,6 @@ if (isset($_POST['change_password'])) {
     } elseif ($new_password !== $confirm_password) {
         $error_msg = "New password and Confirm password do not match.";
     } else {
-        // Point 10: Validate Current Password (supports hashed & plain-text passwords)
         $password_matches = password_verify($current_password, $student['password']) || ($current_password === $student['password']);
 
         if ($password_matches) {
@@ -89,7 +89,6 @@ if (isset($_POST['change_password'])) {
 </head>
 <body class="bg-light">
 
-    <!-- Sidebar Integration -->
     <div class="bg-dark text-white p-3 vh-100" style="width: 250px; position: fixed; left: 0; top: 0;">
         <h4 class="text-center mb-4">Student Portal</h4>
         <ul class="nav flex-column">
@@ -97,7 +96,7 @@ if (isset($_POST['change_password'])) {
                 <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="profile.php" class="nav-link text-white fw-bold">My Profile</a>
+                <a href="results.php" class="nav-link text-white">My Results</a>
             </li>
             <li class="nav-item mb-2">
                 <a href="courses.php" class="nav-link text-white">My Courses</a>
@@ -109,10 +108,10 @@ if (isset($_POST['change_password'])) {
                 <a href="assignment.php" class="nav-link text-white">Assignments</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="results.php" class="nav-link text-white">My Results</a>
+                <a href="notices.php" class="nav-link text-white">Notices</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="notices.php" class="nav-link text-white">Notices</a>
+                <a href="profile.php" class="nav-link text-white fw-bold">My Profile</a>
             </li>
             <li class="nav-item mt-3">
                 <a href="logout.php" class="nav-link text-danger">Logout</a>
@@ -120,26 +119,24 @@ if (isset($_POST['change_password'])) {
         </ul>
     </div>
 
-    <!-- Main Content -->
     <div class="p-4" style="margin-left: 250px; width: calc(100% - 250px);">
         <h2 class="mb-4">Student Profile</h2>
 
         <?php if (!empty($success_msg)): ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <?= htmlspecialchars($success_msg); ?>
+                <?php echo htmlspecialchars($success_msg); ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>
 
         <?php if (!empty($error_msg)): ?>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <?= htmlspecialchars($error_msg); ?>
+                <?php echo htmlspecialchars($error_msg); ?>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>
 
         <div class="row g-4">
-            <!-- Details Card & Edit Profile Form -->
             <div class="col-md-6">
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-primary text-white">
@@ -149,19 +146,19 @@ if (isset($_POST['change_password'])) {
                         <form method="POST" action="profile.php">
                             <div class="mb-3">
                                 <label class="form-label text-muted">Roll Number</label>
-                                <input type="text" class="form-control" value="<?= htmlspecialchars($student['roll_number'] ?? 'N/A'); ?>" disabled>
+                                <input type="text" class="form-control" value="<?php echo htmlspecialchars($student['roll_number'] ?? 'N/A'); ?>" disabled>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label text-muted">Class</label>
-                                <input type="text" class="form-control" value="<?= htmlspecialchars($student['class'] ?? 'N/A'); ?>" disabled>
+                                <input type="text" class="form-control" value="<?php echo htmlspecialchars($student['class'] ?? 'N/A'); ?>" disabled>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Full Name</label>
-                                <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($student['name']); ?>" required>
+                                <input type="text" name="name" class="form-control" value="<?php echo htmlspecialchars($student['name'] ?? ''); ?>" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Email Address</label>
-                                <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($student['email']); ?>" required>
+                                <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($student['email'] ?? ''); ?>" required>
                             </div>
                             <button type="submit" name="update_profile" class="btn btn-primary">Save Changes</button>
                         </form>
@@ -169,7 +166,6 @@ if (isset($_POST['change_password'])) {
                 </div>
             </div>
 
-            <!-- Change Password Form -->
             <div class="col-md-6">
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-dark text-white">
