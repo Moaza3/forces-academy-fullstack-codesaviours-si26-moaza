@@ -15,6 +15,7 @@ $student_id = (int)$_SESSION['student_id'];
 $success_msg = "";
 $error_msg = "";
 
+// Fetch Current Student Details
 $stmt = mysqli_prepare($conn, "SELECT id, full_name, email, roll_number, class, password FROM students WHERE id = ?");
 if (!$stmt) {
     die("Prepare Error: " . mysqli_error($conn));
@@ -24,11 +25,13 @@ mysqli_stmt_bind_param($stmt, "i", $student_id);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $student = mysqli_fetch_assoc($result);
+mysqli_stmt_close($stmt);
 
 if (!$student) {
     die("Student record not found for ID: " . $student_id);
 }
 
+// 1. Handle Profile Update
 if (isset($_POST['update_profile'])) {
     $full_name = trim($_POST['full_name']);
     $email = trim($_POST['email']);
@@ -45,11 +48,13 @@ if (isset($_POST['update_profile'])) {
         } else {
             $error_msg = "Failed to update profile. Email might already exist.";
         }
+        mysqli_stmt_close($update_stmt);
     } else {
         $error_msg = "All fields are required.";
     }
 }
 
+// 2. Handle Password Change
 if (isset($_POST['change_password'])) {
     $current_password = $_POST['current_password'];
     $new_password = $_POST['new_password'];
@@ -60,6 +65,7 @@ if (isset($_POST['change_password'])) {
     } elseif ($new_password !== $confirm_password) {
         $error_msg = "New password and Confirm password do not match.";
     } else {
+        // Secure verify using password_verify OR plain text fallback (for old DB records)
         $password_matches = password_verify($current_password, $student['password']) || ($current_password === $student['password']);
 
         if ($password_matches) {
@@ -68,11 +74,12 @@ if (isset($_POST['change_password'])) {
             mysqli_stmt_bind_param($pass_stmt, "si", $hashed_password, $student_id);
 
             if (mysqli_stmt_execute($pass_stmt)) {
-                $student['password'] = $hashed_password;
+                $student['password'] = $hashed_password; // Update variable in memory
                 $success_msg = "Password changed successfully!";
             } else {
                 $error_msg = "Failed to update password.";
             }
+            mysqli_stmt_close($pass_stmt);
         } else {
             $error_msg = "Incorrect current password.";
         }
@@ -89,36 +96,22 @@ if (isset($_POST['change_password'])) {
 </head>
 <body class="bg-light">
 
+    <!-- Sidebar -->
     <div class="bg-dark text-white p-3 vh-100" style="width: 250px; position: fixed; left: 0; top: 0;">
         <h4 class="text-center mb-4">Student Portal</h4>
         <ul class="nav flex-column">
-            <li class="nav-item mb-2">
-                <a href="dashboard.php" class="nav-link text-white fw-normal">Dashboard</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="profile.php" class="nav-link text-white fw-normal">My Profile</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="courses.php" class="nav-link text-white fw-normal">My Courses</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="timetable.php" class="nav-link text-white fw-normal">Timetable</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="assignment.php" class="nav-link text-white fw-normal">Assignments</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="results.php" class="nav-link text-white fw-normal">My Results</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="notices.php" class="nav-link text-white fw-normal">Notices</a>
-            </li>
-            <li class="nav-item mt-3">
-                <a href="logout.php" class="nav-link text-danger fw-normal">Logout</a>
-            </li>
+            <li class="nav-item mb-2"><a href="dashboard.php" class="nav-link text-white fw-normal">Dashboard</a></li>
+            <li class="nav-item mb-2"><a href="profile.php" class="nav-link text-white fw-bold active">My Profile</a></li>
+            <li class="nav-item mb-2"><a href="courses.php" class="nav-link text-white fw-normal">My Courses</a></li>
+            <li class="nav-item mb-2"><a href="timetable.php" class="nav-link text-white fw-normal">Timetable</a></li>
+            <li class="nav-item mb-2"><a href="assignment.php" class="nav-link text-white fw-normal">Assignments</a></li>
+            <li class="nav-item mb-2"><a href="results.php" class="nav-link text-white fw-normal">My Results</a></li>
+            <li class="nav-item mb-2"><a href="notices.php" class="nav-link text-white fw-normal">Notices</a></li>
+            <li class="nav-item mt-3"><a href="logout.php" class="nav-link text-danger fw-normal">Logout</a></li>
         </ul>
     </div>
 
+    <!-- Main Content Area -->
     <div class="p-4" style="margin-left: 250px; width: calc(100% - 250px);">
         <h2 class="mb-4">Student Profile</h2>
 
@@ -137,6 +130,7 @@ if (isset($_POST['change_password'])) {
         <?php endif; ?>
 
         <div class="row g-4">
+            <!-- Personal Info Card -->
             <div class="col-md-6">
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-primary text-white">
@@ -166,6 +160,7 @@ if (isset($_POST['change_password'])) {
                 </div>
             </div>
 
+            <!-- Password Change Card -->
             <div class="col-md-6">
                 <div class="card shadow-sm border-0">
                     <div class="card-header bg-dark text-white">
