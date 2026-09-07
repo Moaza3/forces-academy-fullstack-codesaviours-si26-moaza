@@ -10,11 +10,6 @@ require_once "config/db.php";
 
 $student_id = (int) $_SESSION['student_id'];
 
-/*
-|--------------------------------------------------------------------------
-| Get results for logged-in student only
-|--------------------------------------------------------------------------
-*/
 $sql = "SELECT
             results.subject,
             results.marks,
@@ -44,7 +39,6 @@ if (!$results) {
 </head>
 <body>
 
-    <!-- SIDEBAR -->
     <div class="bg-dark text-white p-3 vh-100" style="width: 250px; position: fixed; left: 0; top: 0;">
         <h4 class="text-center mb-4">Student Portal</h4>
         <ul class="nav flex-column">
@@ -53,6 +47,9 @@ if (!$results) {
             </li>
             <li class="nav-item mb-2">
                 <a href="courses.php" class="nav-link text-white">My Courses</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="timetable.php" class="nav-link text-white">📅 Timetable</a>
             </li>
             <li class="nav-item mb-2">
                 <a href="assignment.php" class="nav-link text-white">Assignment</a>
@@ -69,7 +66,6 @@ if (!$results) {
         </ul>
     </div>
 
-    <!-- MAIN CONTENT -->
     <div class="p-4" style="margin-left: 250px;">
         <h2 class="mb-4">My Results</h2>
 
