@@ -1,2 +1,4 @@
-height = float(input("Enter your height:"))
-print(height)
+x=True
+y=True
+logical_and = x and y 
+print(x,"and",y,"=",logical_and)
