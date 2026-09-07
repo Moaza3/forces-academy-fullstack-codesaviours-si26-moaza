@@ -96,7 +96,7 @@ if (isset($_POST['change_password'])) {
                 <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="profile.php" class="nav-link text-white fw-bold">My Profile</a>
+                <a href="profile.php" class="nav-link text-white">My Profile</a>
             </li>
             <li class="nav-item mb-2">
                 <a href="courses.php" class="nav-link text-white">My Courses</a>
