@@ -85,7 +85,7 @@ if (!empty($student_class)) {
 
 <main class="container">
     <div class="page-heading">
-        <h1>📅 Weekly Timetable Grid</h1>
+        <h1>Weekly Timetable Grid</h1>
         <p>Class Schedule for <?= htmlspecialchars($student_class); ?></p>
     </div>
 
