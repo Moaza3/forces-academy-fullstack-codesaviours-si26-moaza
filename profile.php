@@ -138,10 +138,25 @@ if (isset($_POST['change_password'])) {
             padding-left: 20px;
         }
 
+        .bg-dark .nav-link.active:hover {
+            background-color: var(--butter) !important;
+            color: var(--green-dark) !important;
+        }
+
         .bg-dark .nav-link.active {
             background-color: var(--butter) !important;
             color: var(--green-dark) !important;
             font-weight: 400 !important;
+        }
+
+        .bg-dark .nav-link:focus,
+        .bg-dark .nav-link:active {
+            color: #fff !important;
+        }
+
+        .bg-dark .nav-link.active:focus,
+        .bg-dark .nav-link.active:active {
+            color: var(--green-dark) !important;
         }
 
         .bg-dark .nav-link.text-danger {
