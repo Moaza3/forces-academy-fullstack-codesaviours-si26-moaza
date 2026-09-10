@@ -39,6 +39,140 @@ if (!$results) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Results | Student Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* ============================================
+           Theme: Butter & Green
+           Butter: #FFEFB3   |   Green: #013E37
+           Only visual styling — no structure/logic changed.
+        ============================================ */
+
+        :root {
+            --butter: #FFEFB3;
+            --green: #013E37;
+            --green-dark: #012a25;
+            --text-dark: #1a1a1a;
+        }
+
+        body.bg-light {
+            background-color: #f4f6f5 !important;
+            font-family: 'Segoe UI', 'Poppins', sans-serif;
+        }
+
+        /* Sidebar */
+        .bg-dark {
+            background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%) !important;
+        }
+
+        .bg-dark h4 {
+            color: var(--butter) !important;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 239, 179, 0.2);
+        }
+
+        .bg-dark .nav-link {
+            border-radius: 8px;
+            padding: 10px 14px;
+            transition: all 0.25s ease;
+        }
+
+        .bg-dark .nav-link:hover {
+            background-color: rgba(255, 239, 179, 0.15);
+            color: var(--butter) !important;
+            padding-left: 20px;
+        }
+
+        .bg-dark .nav-link.text-danger {
+            color: #ff6b6b !important;
+        }
+
+        .bg-dark .nav-link.text-danger:hover {
+            background-color: rgba(255, 107, 107, 0.15);
+            color: #ff8787 !important;
+        }
+
+        /* Heading */
+        h2.mb-4 {
+            color: var(--green);
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        h2.mb-4::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 60px;
+            height: 4px;
+            background-color: var(--butter);
+            border-radius: 2px;
+        }
+
+        /* Card + Table */
+        .card {
+            border-radius: 14px !important;
+            overflow: hidden;
+        }
+
+        .table-dark {
+            --bs-table-bg: var(--green);
+            --bs-table-color: #fff;
+        }
+
+        .table thead th {
+            font-weight: 600;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            border: none;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(255, 239, 179, 0.25);
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+            padding-top: 14px;
+            padding-bottom: 14px;
+        }
+
+        /* Grade badges recolored to theme where it makes sense */
+        .badge {
+            font-size: 0.8rem;
+            padding: 6px 10px;
+            border-radius: 6px;
+        }
+
+        .badge.bg-success {
+            background-color: var(--green) !important;
+        }
+
+        .badge.bg-primary {
+            background-color: #2f6f63 !important;
+        }
+
+        .badge.bg-warning {
+            background-color: var(--butter) !important;
+            color: var(--text-dark) !important;
+        }
+
+        .alert-info {
+            background-color: var(--butter);
+            border: none;
+            border-radius: 12px;
+            color: var(--text-dark);
+        }
+
+        .alert-info .alert-heading {
+            color: var(--green-dark);
+            font-weight: 700;
+        }
+    </style>
 </head>
 <body class="bg-light">
 

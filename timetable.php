@@ -50,13 +50,81 @@ if (!empty($student_class)) {
     <title>My Timetable | Student Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .card-box { background: white; border-radius: 12px; padding: 20px; border: 1px solid #e3e6f0; overflow-x: auto; }
+        /* ============================================
+           Theme: Butter & Green
+           Butter: #FFEFB3   |   Green: #013E37
+           Only visual styling — no structure/logic changed.
+        ============================================ */
+
+        :root {
+            --butter: #FFEFB3;
+            --green: #013E37;
+            --green-dark: #012a25;
+            --text-dark: #1a1a1a;
+        }
+
+        body.bg-light {
+            background-color: #f4f6f5 !important;
+            font-family: 'Segoe UI', 'Poppins', sans-serif;
+        }
+
+        /* Sidebar */
+        .bg-dark {
+            background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%) !important;
+        }
+
+        .bg-dark h4 {
+            color: var(--butter) !important;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 239, 179, 0.2);
+        }
+
+        .bg-dark .nav-link {
+            border-radius: 8px;
+            padding: 10px 14px;
+            transition: all 0.25s ease;
+        }
+
+        .bg-dark .nav-link:hover {
+            background-color: rgba(255, 239, 179, 0.15);
+            color: var(--butter) !important;
+            padding-left: 20px;
+        }
+
+        .bg-dark .nav-link.text-danger {
+            color: #ff6b6b !important;
+        }
+
+        .bg-dark .nav-link.text-danger:hover {
+            background-color: rgba(255, 107, 107, 0.15);
+            color: #ff8787 !important;
+        }
+
+        /* Heading */
+        h2 {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        hr {
+            border-top: 2px solid var(--butter);
+            opacity: 1;
+        }
+
+        .badge.bg-primary {
+            background-color: var(--green) !important;
+        }
+
+        /* Timetable table — recolored from blue to green/butter theme */
+        .card-box { background: white; border-radius: 14px; padding: 20px; border: 1px solid #e3e6f0; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; min-width: 800px; }
         th, td { border: 1px solid #e2e8f0; padding: 12px; text-align: center; vertical-align: top; }
-        th { background: #f8f9fa; color: #333; font-size: 14px; }
-        .time-col { background: #f8fafc; font-weight: 600; color: #495057; width: 140px; vertical-align: middle; }
-        .slot-card { background: #eef2ff; border-left: 4px solid #0d6efd; padding: 8px 10px; border-radius: 6px; text-align: left; }
-        .slot-subject { font-weight: 600; color: #1e40af; font-size: 14px; }
+        th { background: var(--green); color: #fff; font-size: 14px; font-weight: 600; }
+        .time-col { background: #f8fafc; font-weight: 600; color: var(--green-dark); width: 140px; vertical-align: middle; }
+        .slot-card { background: var(--butter); border-left: 4px solid var(--green); padding: 8px 10px; border-radius: 6px; text-align: left; }
+        .slot-subject { font-weight: 600; color: var(--green-dark); font-size: 14px; }
         .slot-teacher { font-size: 12px; color: #475569; margin-top: 4px; }
         .empty-cell { color: #adb5bd; font-size: 13px; }
     </style>

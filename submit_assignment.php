@@ -132,6 +132,129 @@ if (isset($_POST['submit_assignment'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submit Assignment | Student Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* ============================================
+           Theme: Butter & Green
+           Butter: #FFEFB3   |   Green: #013E37
+           Only visual styling — no structure/logic changed.
+        ============================================ */
+
+        :root {
+            --butter: #FFEFB3;
+            --green: #013E37;
+            --green-dark: #012a25;
+            --text-dark: #1a1a1a;
+        }
+
+        body.bg-light {
+            background-color: #f4f6f5 !important;
+            font-family: 'Segoe UI', 'Poppins', sans-serif;
+        }
+
+        /* Sidebar */
+        .bg-dark {
+            background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%) !important;
+        }
+
+        .bg-dark h4 {
+            color: var(--butter) !important;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 239, 179, 0.2);
+        }
+
+        .bg-dark .nav-link {
+            border-radius: 8px;
+            padding: 10px 14px;
+            transition: all 0.25s ease;
+        }
+
+        .bg-dark .nav-link:hover {
+            background-color: rgba(255, 239, 179, 0.15);
+            color: var(--butter) !important;
+            padding-left: 20px;
+        }
+
+        .bg-dark .nav-link.text-danger {
+            color: #ff6b6b !important;
+        }
+
+        .bg-dark .nav-link.text-danger:hover {
+            background-color: rgba(255, 107, 107, 0.15);
+            color: #ff8787 !important;
+        }
+
+        /* Card */
+        .card {
+            border-radius: 16px !important;
+        }
+
+        h2.mb-4 {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        h4.text-primary {
+            color: var(--green) !important;
+            font-weight: 700;
+        }
+
+        .border-bottom {
+            border-bottom: 2px solid var(--butter) !important;
+        }
+
+        .form-label {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .form-control {
+            border-radius: 8px;
+        }
+
+        .form-control:focus {
+            border-color: var(--green);
+            box-shadow: 0 0 0 0.2rem rgba(1, 62, 55, 0.15);
+        }
+
+        .btn-primary {
+            background-color: var(--green) !important;
+            border-color: var(--green) !important;
+            border-radius: 8px !important;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--green-dark) !important;
+            border-color: var(--green-dark) !important;
+        }
+
+        .btn-success {
+            background-color: var(--green) !important;
+            border-color: var(--green) !important;
+            border-radius: 8px !important;
+        }
+
+        .btn-success:hover {
+            background-color: var(--green-dark) !important;
+            border-color: var(--green-dark) !important;
+        }
+
+        .btn-outline-secondary {
+            border-radius: 8px !important;
+        }
+
+        .alert-success {
+            border-left: 4px solid var(--green);
+            border-radius: 10px;
+        }
+
+        .alert-danger {
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
