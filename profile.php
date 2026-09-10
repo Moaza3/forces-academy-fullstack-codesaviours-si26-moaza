@@ -141,6 +141,7 @@ if (isset($_POST['change_password'])) {
         .bg-dark .nav-link.active {
             background-color: var(--butter) !important;
             color: var(--green-dark) !important;
+            font-weight: 400 !important;
         }
 
         .bg-dark .nav-link.text-danger {
@@ -247,7 +248,7 @@ if (isset($_POST['change_password'])) {
         <h4 class="text-center mb-4">Student Portal</h4>
         <ul class="nav flex-column">
             <li class="nav-item mb-2"><a href="dashboard.php" class="nav-link text-white fw-normal">Dashboard</a></li>
-            <li class="nav-item mb-2"><a href="profile.php" class="nav-link text-white fw-bold active">My Profile</a></li>
+            <li class="nav-item mb-2"><a href="profile.php" class="nav-link text-white fw-normal active">My Profile</a></li>
             <li class="nav-item mb-2"><a href="courses.php" class="nav-link text-white fw-normal">My Courses</a></li>
             <li class="nav-item mb-2"><a href="timetable.php" class="nav-link text-white fw-normal">Timetable</a></li>
             <li class="nav-item mb-2"><a href="assignment.php" class="nav-link text-white fw-normal">Assignments</a></li>
