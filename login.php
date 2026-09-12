@@ -32,12 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        /* ============================================
-           Theme: Butter & Green
-           Butter: #FFEFB3   |   Green: #013E37
-           Only visual styling — no structure/logic changed.
-        ============================================ */
-
         :root {
             --butter: #FFEFB3;
             --green: #013E37;
