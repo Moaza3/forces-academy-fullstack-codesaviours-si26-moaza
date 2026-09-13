@@ -16,23 +16,19 @@ if (!isset($_SESSION["admin_id"]) || ($_SESSION["admin_role"] ?? '') !== "admin"
     exit;
 }
 
-$student_query = "SELECT COUNT(*) AS total_students FROM students";
-$student_result = mysqli_query($conn, $student_query);
+$student_result = @mysqli_query($conn, "SELECT COUNT(*) AS total_students FROM students");
 $student_data = $student_result ? mysqli_fetch_assoc($student_result) : ['total_students' => 0];
 $total_students = $student_data["total_students"] ?? 0;
 
-$course_query = "SELECT COUNT(*) AS total_courses FROM courses";
-$course_result = mysqli_query($conn, $course_query);
+$course_result = @mysqli_query($conn, "SELECT COUNT(*) AS total_courses FROM courses");
 $course_data = $course_result ? mysqli_fetch_assoc($course_result) : ['total_courses' => 0];
 $total_courses = $course_data["total_courses"] ?? 0;
 
-$assignment_query = "SELECT COUNT(*) AS total_assignments FROM assignments";
-$assignment_result = mysqli_query($conn, $assignment_query);
+$assignment_result = @mysqli_query($conn, "SELECT COUNT(*) AS total_assignments FROM assignments");
 $assignment_data = $assignment_result ? mysqli_fetch_assoc($assignment_result) : ['total_assignments' => 0];
 $total_assignments = $assignment_data["total_assignments"] ?? 0;
 
-$notice_query = "SELECT COUNT(*) AS total_notices FROM notices";
-$notice_result = mysqli_query($conn, $notice_query);
+$notice_result = @mysqli_query($conn, "SELECT COUNT(*) AS total_notices FROM notices");
 $notice_data = $notice_result ? mysqli_fetch_assoc($notice_result) : ['total_notices' => 0];
 $total_notices = $notice_data["total_notices"] ?? 0;
 ?>
