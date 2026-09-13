@@ -1,31 +1,36 @@
 <?php
-session_start();
-require_once "../config/db.php";
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-if (!isset($_SESSION["admin_id"]) || $_SESSION["admin_role"] !== "admin") {
+session_start();
+
+if (file_exists("../config/db.php")) {
+    require_once "../config/db.php";
+} else {
+    die("Error: Database configuration file standard path par nahi mili.");
+}
+
+if (!isset($_SESSION["admin_id"]) || ($_SESSION["admin_role"] ?? '') !== "admin") {
     header("Location: login.php");
     exit;
 }
 
-// Fetch total students
 $student_query = "SELECT COUNT(*) AS total_students FROM students";
 $student_result = mysqli_query($conn, $student_query);
 $student_data = $student_result ? mysqli_fetch_assoc($student_result) : ['total_students' => 0];
 $total_students = $student_data["total_students"] ?? 0;
 
-// Fetch total courses
 $course_query = "SELECT COUNT(*) AS total_courses FROM courses";
 $course_result = mysqli_query($conn, $course_query);
 $course_data = $course_result ? mysqli_fetch_assoc($course_result) : ['total_courses' => 0];
 $total_courses = $course_data["total_courses"] ?? 0;
 
-// Fetch total assignments
 $assignment_query = "SELECT COUNT(*) AS total_assignments FROM assignments";
 $assignment_result = mysqli_query($conn, $assignment_query);
 $assignment_data = $assignment_result ? mysqli_fetch_assoc($assignment_result) : ['total_assignments' => 0];
 $total_assignments = $assignment_data["total_assignments"] ?? 0;
 
-// Fetch total notices
 $notice_query = "SELECT COUNT(*) AS total_notices FROM notices";
 $notice_result = mysqli_query($conn, $notice_query);
 $notice_data = $notice_result ? mysqli_fetch_assoc($notice_result) : ['total_notices' => 0];
@@ -166,7 +171,6 @@ $total_notices = $notice_data["total_notices"] ?? 0;
     <div class="container-fluid">
         <div class="row">
 
-            <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3">
                 <h4 class="text-center mb-4">Admin Panel</h4>
 
@@ -175,13 +179,13 @@ $total_notices = $notice_data["total_notices"] ?? 0;
                     <a href="students.php" class="nav-link text-white mb-2">Manage Students</a>
                     <a href="courses.php" class="nav-link text-white mb-2">Manage Courses</a>
                     <a href="assignments.php" class="nav-link text-white mb-2">Manage Assignments</a>
+                    <a href="timetable.php" class="nav-link text-white mb-2">Timetable</a>
                     <a href="results.php" class="nav-link text-white mb-2">Upload Results</a>
                     <a href="notice.php" class="nav-link text-white mb-2">Post Notice</a>
                     <a href="logout.php" class="nav-link text-danger">Logout</a>
                 </div>
             </div>
 
-            <!-- Main Content Area -->
             <div class="col-md-9 col-lg-10 p-4">
                 <h2 class="mb-4">Admin Dashboard</h2>
 
@@ -189,7 +193,6 @@ $total_notices = $notice_data["total_notices"] ?? 0;
                     Welcome, <strong><?php echo htmlspecialchars($_SESSION["admin_username"] ?? "Admin"); ?></strong>!
                 </p>
 
-                <!-- Counter Cards Grid -->
                 <div class="row g-4">
 
                     <div class="col-md-6 col-xl-3">
