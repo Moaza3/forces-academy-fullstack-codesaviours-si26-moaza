@@ -114,7 +114,10 @@ $result = mysqli_query($conn, $sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Courses</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
         :root {
@@ -145,7 +148,7 @@ $result = mysqli_query($conn, $sql);
             border-radius: 8px;
             padding: 10px 14px;
             transition: all 0.25s ease;
-            font-weight: 500;
+            font-weight: 400;
         }
 
         .bg-dark .nav-link:hover, .bg-dark .nav-link.active {
@@ -266,21 +269,32 @@ $result = mysqli_query($conn, $sql);
 </head>
 <body class="bg-light">
 
+    <!-- Mobile Top Navigation Bar -->
+    <nav class="navbar navbar-dark bg-dark d-md-none p-3 shadow-sm">
+        <div class="container-fluid">
+            <span class="navbar-brand fw-bold" style="color: var(--butter);">Admin Panel</span>
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#adminSidebar" aria-controls="adminSidebar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
     <div class="container-fluid">
         <div class="row">
 
             <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3">
-                <h4 class="text-center mb-4">Admin Panel</h4>
+            <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3 collapse d-md-block" id="adminSidebar">
+                <h4 class="text-center mb-4 d-none d-md-block">Admin Panel</h4>
 
                 <div class="nav flex-column">
-                    <a href="dashboard.php" class="nav-link text-white mb-2">Dashboard</a>
-                    <a href="students.php" class="nav-link text-white mb-2">Manage Students</a>
-                    <a href="courses.php" class="nav-link text-white mb-2 active">Manage Courses</a>
-                    <a href="assignments.php" class="nav-link text-white mb-2">Manage Assignments</a>
-                    <a href="results.php" class="nav-link text-white mb-2">Upload Results</a>
-                    <a href="notice.php" class="nav-link text-white mb-2">Post Notice</a>
-                    <a href="logout.php" class="nav-link text-danger">Logout</a>
+                    <a href="dashboard.php" class="nav-link text-white mb-2"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+                    <a href="students.php" class="nav-link text-white mb-2"><i class="bi bi-people me-2"></i>Manage Students</a>
+                    <a href="courses.php" class="nav-link text-white mb-2 active"><i class="bi bi-book me-2"></i>Manage Courses</a>
+                    <a href="assignments.php" class="nav-link text-white mb-2"><i class="bi bi-journal-text me-2"></i>Manage Assignments</a>
+                    <a href="fees.php" class="nav-link text-white mb-2"><i class="bi bi-cash-stack me-2"></i>Manage Fees</a>
+                    <a href="results.php" class="nav-link text-white mb-2"><i class="bi bi-award me-2"></i>Upload Results</a>
+                    <a href="notices.php" class="nav-link text-white mb-2"><i class="bi bi-megaphone me-2"></i>Post Notice</a>
+                    <a href="logout.php" class="nav-link text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
                 </div>
             </div>
 
@@ -301,8 +315,8 @@ $result = mysqli_query($conn, $sql);
                 <?php endif; ?>
 
                 <!-- Form Card -->
-                <div class="card shadow-sm mb-4">
-                    <div class="card-body">
+                <div class="card shadow-sm mb-4 border-top border-4 border-success">
+                    <div class="card-body p-4">
                         <h4 class="mb-3"><?php echo $edit_course ? "Edit Course" : "Add New Course"; ?></h4>
 
                         <form method="POST" action="courses.php">
@@ -337,55 +351,59 @@ $result = mysqli_query($conn, $sql);
                                 >
                             </div>
 
-                            <?php if ($edit_course): ?>
-                                <button type="submit" class="btn btn-primary">Update Course</button>
-                                <a href="courses.php" class="btn btn-secondary">Cancel</a>
-                            <?php else: ?>
-                                <button type="submit" class="btn btn-success">Add Course</button>
-                            <?php endif; ?>
+                            <div class="d-flex gap-2">
+                                <?php if ($edit_course): ?>
+                                    <button type="submit" class="btn btn-primary px-4 py-2">Update Course</button>
+                                    <a href="courses.php" class="btn btn-secondary px-4 py-2">Cancel</a>
+                                <?php else: ?>
+                                    <button type="submit" class="btn btn-success px-4 py-2">Add Course</button>
+                                <?php endif; ?>
+                            </div>
                         </form>
                     </div>
                 </div>
 
                 <!-- Table Card -->
-                <div class="card shadow-sm">
-                    <div class="card-body">
+                <div class="card shadow-sm border-top border-4 border-warning">
+                    <div class="card-body p-4">
                         <h4 class="mb-3">All Courses</h4>
 
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover">
+                            <table class="table table-bordered table-hover align-middle mb-0">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th>Course Name</th>
-                                        <th>Description</th>
-                                        <th>Teacher Name</th>
-                                        <th>Created Date</th>
-                                        <th>Actions</th>
+                                        <th class="py-3 px-3">Course Name</th>
+                                        <th class="py-3 px-3">Description</th>
+                                        <th class="py-3 px-3">Teacher Name</th>
+                                        <th class="py-3 px-3">Created Date</th>
+                                        <th class="py-3 px-3">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <?php if ($result && mysqli_num_rows($result) > 0): ?>
                                         <?php while ($course = mysqli_fetch_assoc($result)): ?>
                                             <tr>
-                                                <td><?php echo htmlspecialchars($course["course_name"]); ?></td>
-                                                <td><?php echo htmlspecialchars($course["description"]); ?></td>
-                                                <td><?php echo htmlspecialchars($course["teacher_name"]); ?></td>
-                                                <td><?php echo htmlspecialchars($course["created_at"]); ?></td>
-                                                <td>
-                                                    <a href="courses.php?edit=<?php echo (int)$course["id"]; ?>" class="btn btn-sm btn-primary">Edit</a>
+                                                <td class="px-3 fw-medium"><?php echo htmlspecialchars($course["course_name"]); ?></td>
+                                                <td class="px-3 text-muted"><?php echo htmlspecialchars($course["description"]); ?></td>
+                                                <td class="px-3"><?php echo htmlspecialchars($course["teacher_name"]); ?></td>
+                                                <td class="px-3 text-nowrap"><?php echo htmlspecialchars($course["created_at"]); ?></td>
+                                                <td class="px-3 text-nowrap">
+                                                    <a href="courses.php?edit=<?php echo (int)$course["id"]; ?>" class="btn btn-sm btn-outline-success me-1">
+                                                        <i class="bi bi-pencil-square"></i> Edit
+                                                    </a>
                                                     <a
                                                         href="courses.php?delete=<?php echo (int)$course["id"]; ?>"
-                                                        class="btn btn-sm btn-danger"
+                                                        class="btn btn-sm btn-outline-danger"
                                                         onclick="return confirm('Are you sure you want to delete this course?');"
                                                     >
-                                                        Delete
+                                                        <i class="bi bi-trash"></i> Delete
                                                     </a>
                                                 </td>
                                             </tr>
                                         <?php endwhile; ?>
                                     <?php else: ?>
                                         <tr>
-                                            <td colspan="5" class="text-center">No courses found.</td>
+                                            <td colspan="5" class="text-center py-4 text-muted">No courses found.</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
@@ -399,5 +417,7 @@ $result = mysqli_query($conn, $sql);
         </div>
     </div>
 
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

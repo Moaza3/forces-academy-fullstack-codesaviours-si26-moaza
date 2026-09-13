@@ -8,44 +8,71 @@ if (!isset($_SESSION["admin_id"]) || $_SESSION["admin_role"] !== "admin") {
     exit;
 }
 
-$message = "";
-if (isset($_GET["msg"])) {
-    if ($_GET["msg"] === "added") {
-        $message = "Timetable entry added successfully!";
-    } elseif ($_GET["msg"] === "deleted") {
-        $message = "Timetable entry deleted successfully!";
-    }
-}
+$error = "";
+$success = "";
+
+// Form sticky variables
+$class_val = "";
+$day_val = "";
+$time_slot_val = "";
+$subject_val = "";
+$teacher_val = "";
 
 // Handle Form Submission
 if (isset($_POST["add_timetable"])) {
-    $class = trim($_POST["class"]);
-    $day = trim($_POST["day"]);
-    $time_slot = trim($_POST["time_slot"]);
-    $subject = trim($_POST["subject"]);
-    $teacher = trim($_POST["teacher"]);
+    $class = trim($_POST["class"] ?? "");
+    $day = trim($_POST["day"] ?? "");
+    $time_slot = trim($_POST["time_slot"] ?? "");
+    $subject = trim($_POST["subject"] ?? "");
+    $teacher = trim($_POST["teacher"] ?? "");
 
-    $stmt = mysqli_prepare(
-        $conn,
-        "INSERT INTO timetable (`class`, day, time_slot, subject, teacher) VALUES (?, ?, ?, ?, ?)"
-    );
+    // Preserve posted values for form retention on error
+    $class_val = $class;
+    $day_val = $day;
+    $time_slot_val = $time_slot;
+    $subject_val = $subject;
+    $teacher_val = $teacher;
 
-    if ($stmt) {
-        mysqli_stmt_bind_param(
-            $stmt,
-            "sssss",
-            $class,
-            $day,
-            $time_slot,
-            $subject,
-            $teacher
+    if (empty($class) || empty($day) || empty($time_slot) || empty($subject) || empty($teacher)) {
+        $error = "All fields are required.";
+    } else {
+        $stmt = mysqli_prepare(
+            $conn,
+            "INSERT INTO timetable (`class`, day, time_slot, subject, teacher) VALUES (?, ?, ?, ?, ?)"
         );
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-    }
 
-    header("Location: timetable.php?msg=added");
-    exit;
+        if ($stmt) {
+            mysqli_stmt_bind_param(
+                $stmt,
+                "sssss",
+                $class,
+                $day,
+                $time_slot,
+                $subject,
+                $teacher
+            );
+            
+            if (mysqli_stmt_execute($stmt)) {
+                mysqli_stmt_close($stmt);
+                header("Location: timetable.php?msg=added");
+                exit;
+            } else {
+                $error = "Failed to add timetable entry. Please try again.";
+                mysqli_stmt_close($stmt);
+            }
+        } else {
+            $error = "Database error. Please try again.";
+        }
+    }
+}
+
+// Handle Messages from Redirects
+if (isset($_GET["msg"])) {
+    if ($_GET["msg"] === "added") {
+        $success = "Timetable entry added successfully!";
+    } elseif ($_GET["msg"] === "deleted") {
+        $success = "Timetable entry deleted successfully!";
+    }
 }
 
 // Handle Deletion
@@ -156,6 +183,17 @@ $result = mysqli_stmt_get_result($fetch_stmt);
             background: #eaf5f2;
             color: #013E37;
             border: 1px solid #bce3d9;
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .alert-danger {
+            background: #ffe2e2;
+            color: #dc2626;
+            border: 1px solid #fecdd3;
             padding: 14px 20px;
             border-radius: 12px;
             margin-bottom: 25px;
@@ -419,9 +457,15 @@ $result = mysqli_stmt_get_result($fetch_stmt);
         <p>Add, view and manage class timetable entries easily.</p>
     </div>
 
-    <?php if ($message !== ""): ?>
+    <?php if ($error !== ""): ?>
+        <div class="alert-danger">
+            <?= htmlspecialchars($error) ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($success !== ""): ?>
         <div class="alert-banner">
-            <?= htmlspecialchars($message) ?>
+            <?= htmlspecialchars($success) ?>
         </div>
     <?php endif; ?>
 
@@ -440,6 +484,7 @@ $result = mysqli_stmt_get_result($fetch_stmt);
                             type="text"
                             name="class"
                             placeholder="Enter class"
+                            value="<?= htmlspecialchars($class_val) ?>"
                             required
                         >
                     </div>
@@ -448,12 +493,12 @@ $result = mysqli_stmt_get_result($fetch_stmt);
                         <label>Select Day</label>
                         <select name="day" required>
                             <option value="">Choose Day</option>
-                            <option value="Monday">Monday</option>
-                            <option value="Tuesday">Tuesday</option>
-                            <option value="Wednesday">Wednesday</option>
-                            <option value="Thursday">Thursday</option>
-                            <option value="Friday">Friday</option>
-                            <option value="Saturday">Saturday</option>
+                            <option value="Monday" <?= ($day_val === 'Monday') ? 'selected' : '' ?>>Monday</option>
+                            <option value="Tuesday" <?= ($day_val === 'Tuesday') ? 'selected' : '' ?>>Tuesday</option>
+                            <option value="Wednesday" <?= ($day_val === 'Wednesday') ? 'selected' : '' ?>>Wednesday</option>
+                            <option value="Thursday" <?= ($day_val === 'Thursday') ? 'selected' : '' ?>>Thursday</option>
+                            <option value="Friday" <?= ($day_val === 'Friday') ? 'selected' : '' ?>>Friday</option>
+                            <option value="Saturday" <?= ($day_val === 'Saturday') ? 'selected' : '' ?>>Saturday</option>
                         </select>
                     </div>
 
@@ -463,6 +508,7 @@ $result = mysqli_stmt_get_result($fetch_stmt);
                             type="text"
                             name="time_slot"
                             placeholder="e.g. 10:00 - 11:00"
+                            value="<?= htmlspecialchars($time_slot_val) ?>"
                             required
                         >
                     </div>
@@ -473,6 +519,7 @@ $result = mysqli_stmt_get_result($fetch_stmt);
                             type="text"
                             name="subject"
                             placeholder="Enter subject"
+                            value="<?= htmlspecialchars($subject_val) ?>"
                             required
                         >
                     </div>
@@ -483,6 +530,7 @@ $result = mysqli_stmt_get_result($fetch_stmt);
                             type="text"
                             name="teacher"
                             placeholder="Enter teacher name"
+                            value="<?= htmlspecialchars($teacher_val) ?>"
                             required
                         >
                     </div>

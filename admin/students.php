@@ -1,8 +1,17 @@
 <?php
-session_start();
-require_once "../config/db.php";
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-if (!isset($_SESSION["admin_id"]) || $_SESSION["admin_role"] !== "admin") {
+session_start();
+
+if (file_exists("../config/db.php")) {
+    require_once "../config/db.php";
+} else {
+    die("Error: Database configuration file standard path par nahi mili.");
+}
+
+if (!isset($_SESSION["admin_id"]) || ($_SESSION["admin_role"] ?? '') !== "admin") {
     header("Location: login.php");
     exit;
 }
@@ -105,15 +114,10 @@ if ($search !== "") {
             font-weight: 500;
         }
 
-        .bg-dark .nav-link:hover {
+        .bg-dark .nav-link:hover, .bg-dark .nav-link.active {
             background-color: rgba(255, 239, 179, 0.15);
             color: var(--butter) !important;
             padding-left: 20px;
-        }
-
-        .bg-dark .nav-link.active {
-            background-color: rgba(255, 239, 179, 0.2);
-            color: var(--butter) !important;
         }
 
         .bg-dark .nav-link.text-danger {
@@ -224,19 +228,32 @@ if ($search !== "") {
 </head>
 <body class="bg-light">
 
+    <!-- Mobile Top Navbar with 3-Lines Toggler -->
+    <nav class="navbar navbar-dark bg-dark d-md-none p-3">
+        <div class="container-fluid">
+            <span class="navbar-brand fw-bold" style="color: var(--butter);">Admin Panel</span>
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#adminSidebar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
 <div class="container-fluid">
     <div class="row">
 
-        <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3">
-            <h4 class="text-center mb-4">Admin Panel</h4>
+        <!-- Sidebar -->
+        <div id="adminSidebar" class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3 collapse d-md-block">
+            <h4 class="text-center mb-4 d-none d-md-block">Admin Panel</h4>
 
             <div class="nav flex-column">
                 <a href="dashboard.php" class="nav-link text-white mb-2">Dashboard</a>
-                <a href="students.php" class="nav-link text-white mb-2 fw-bold active">Manage Students</a>
+                <a href="students.php" class="nav-link text-white mb-2 active">Manage Students</a>
                 <a href="courses.php" class="nav-link text-white mb-2">Manage Courses</a>
                 <a href="assignments.php" class="nav-link text-white mb-2">Manage Assignments</a>
+                <a href="fees.php" class="nav-link text-white mb-2">Manage Fees</a>
+                <a href="timetable.php" class="nav-link text-white mb-2">Timetable</a>
                 <a href="results.php" class="nav-link text-white mb-2">Upload Results</a>
-                <a href="notice.php" class="nav-link text-white mb-2">Post Notice</a>
+                <a href="notices.php" class="nav-link text-white mb-2">Post Notice</a>
                 <a href="logout.php" class="nav-link text-danger">Logout</a>
             </div>
         </div>

@@ -12,7 +12,6 @@ $success = "";
 $title_val = "";
 $content_val = "";
 
-// Handle Notice Posting
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["post_notice"])) {
     $title = trim($_POST["title"] ?? "");
     $content = trim($_POST["content"] ?? "");
@@ -44,7 +43,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["post_notice"])) {
     }
 }
 
-// Handle Notice Deletion (POST Method for Security)
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_notice"])) {
     $notice_id = (int) ($_POST["notice_id"] ?? 0);
 

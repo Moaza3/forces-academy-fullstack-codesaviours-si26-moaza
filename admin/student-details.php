@@ -7,8 +7,18 @@ if (!isset($_SESSION['student_id'])) {
 
 require_once "config/db.php";
 
-$query = "SELECT * FROM courses ORDER BY created_at DESC";
-$result = mysqli_query($conn, $query);
+$student_id = $_SESSION['student_id'];
+
+// Updated query to fetch only the courses enrolled by the logged-in student
+$query = "SELECT courses.* FROM courses 
+          JOIN student_courses ON courses.id = student_courses.course_id 
+          WHERE student_courses.student_id = ? 
+          ORDER BY courses.created_at DESC";
+
+$stmt = mysqli_prepare($conn, $query);
+mysqli_stmt_bind_param($stmt, "i", $student_id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -230,7 +240,7 @@ $result = mysqli_query($conn, $query);
                 <div class="col-12">
                     <div class="alert alert-info">
                         <h5 class="fw-bold">No Courses Available</h5>
-                        <p class="mb-0">There are no courses assigned or available at the moment. Please check again later.</p>
+                        <p class="mb-0">You are not enrolled in any courses at the moment. Please check again later.</p>
                     </div>
                 </div>
             <?php endif; ?>

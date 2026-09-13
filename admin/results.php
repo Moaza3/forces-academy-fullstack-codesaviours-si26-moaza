@@ -51,37 +51,49 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } elseif ($marks > $total_marks) {
         $error = "Obtained marks cannot be greater than total marks.";
     } else {
+        // Check if the student is actually enrolled in this course
+        $check_sql = "SELECT * FROM student_courses WHERE student_id = ? AND course_id = ?";
+        $check_stmt = mysqli_prepare($conn, $check_sql);
+        mysqli_stmt_bind_param($check_stmt, "ii", $student_id, $course_id);
+        mysqli_stmt_execute($check_stmt);
+        $check_result = mysqli_stmt_get_result($check_stmt);
 
-        $sql = "INSERT INTO results
-                (student_id, course_id, subject, marks, total_marks, grade, exam_type)
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-        $stmt = mysqli_prepare($conn, $sql);
-
-        if ($stmt) {
-            mysqli_stmt_bind_param(
-                $stmt,
-                "iisiiss",
-                $student_id,
-                $course_id,
-                $subject,
-                $marks,
-                $total_marks,
-                $grade,
-                $exam_type
-            );
-
-            if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_close($stmt);
-
-                header("Location: results.php?success=1");
-                exit;
-            } else {
-                $error = "Result could not be uploaded. Please try again.";
-                mysqli_stmt_close($stmt);
-            }
+        if (mysqli_num_rows($check_result) === 0) {
+            $error = "Selected student is not enrolled in this course.";
+            mysqli_stmt_close($check_stmt);
         } else {
-            $error = "Database error. Please try again.";
+            mysqli_stmt_close($check_stmt);
+
+            $sql = "INSERT INTO results
+                    (student_id, course_id, subject, marks, total_marks, grade, exam_type)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+            $stmt = mysqli_prepare($conn, $sql);
+
+            if ($stmt) {
+                mysqli_stmt_bind_param(
+                    $stmt,
+                    "iisiiss",
+                    $student_id,
+                    $course_id,
+                    $subject,
+                    $marks,
+                    $total_marks,
+                    $grade,
+                    $exam_type
+                );
+
+                if (mysqli_stmt_execute($stmt)) {
+                    mysqli_stmt_close($stmt);
+                    header("Location: results.php?success=1");
+                    exit;
+                } else {
+                    $error = "Result could not be uploaded. Please try again.";
+                    mysqli_stmt_close($stmt);
+                }
+            } else {
+                $error = "Database error. Please try again.";
+            }
         }
     }
 }

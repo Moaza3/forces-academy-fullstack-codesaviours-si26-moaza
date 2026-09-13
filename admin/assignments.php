@@ -83,49 +83,65 @@ $assignments = mysqli_query($conn, "
             --butter: #FFEFB3;
             --green: #013E37;
             --green-dark: #012a25;
+            --text-dark: #1a1a1a;
         }
 
-        body {
-            background-color: #f4f6f5;
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        body.bg-light {
+            background-color: #f4f6f5 !important;
+            font-family: 'Segoe UI', 'Poppins', sans-serif;
         }
 
-        /* Custom Theme Overrides for Bootstrap Elements */
-        .bg-custom-dark {
+        .bg-dark {
             background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%) !important;
         }
 
-        .text-butter {
+        .bg-dark h4 {
             color: var(--butter) !important;
-        }
-
-        .border-butter {
-            border-color: var(--butter) !important;
-        }
-
-        .sidebar-brand {
-            font-weight: 800 !important;
+            font-weight: 700;
             letter-spacing: 0.5px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 239, 179, 0.2);
         }
 
-        .nav-link-custom {
-            color: #ffffff;
-            border-radius: 0.5rem;
-            padding: 0.6rem 1rem;
-            transition: all 0.2s ease-in-out;
+        .bg-dark .nav-link {
+            border-radius: 8px;
+            padding: 10px 14px;
+            transition: all 0.25s ease;
             font-weight: 400;
         }
 
-        .nav-link-custom:hover {
+        .bg-dark .nav-link:hover, .bg-dark .nav-link.active {
             background-color: rgba(255, 239, 179, 0.15);
-            color: var(--butter);
-            padding-left: 1.25rem;
+            color: var(--butter) !important;
+            padding-left: 20px;
         }
 
-        .nav-link-custom.active {
-            background-color: rgba(255, 239, 179, 0.2);
-            color: var(--butter) !important;
-            font-weight: 600;
+        .bg-dark .nav-link.text-danger {
+            color: #ff6b6b !important;
+            margin-top: 10px;
+        }
+
+        .bg-dark .nav-link.text-danger:hover {
+            background-color: rgba(255, 107, 107, 0.15);
+            color: #ff8787 !important;
+        }
+
+        h2.mb-4, .custom-heading {
+            color: var(--green);
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        h2.mb-4::after, .custom-heading::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 60px;
+            height: 4px;
+            background-color: var(--butter);
+            border-radius: 2px;
         }
 
         .btn-custom-green {
@@ -140,23 +156,6 @@ $assignments = mysqli_query($conn, "
             color: #ffffff;
         }
 
-        .custom-heading {
-            color: var(--green);
-            position: relative;
-            padding-bottom: 0.5rem;
-        }
-
-        .custom-heading::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 60px;
-            height: 4px;
-            background-color: var(--butter);
-            border-radius: 2px;
-        }
-
         .table-custom-header {
             background-color: var(--green) !important;
             color: #ffffff !important;
@@ -166,15 +165,24 @@ $assignments = mysqli_query($conn, "
             border-color: var(--green);
             box-shadow: 0 0 0 0.25rem rgba(1, 62, 55, 0.15);
         }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--green);
+            border-radius: 4px;
+        }
     </style>
 </head>
-<body>
+<body class="bg-light">
 
     <!-- Mobile Top Navigation Bar -->
-    <nav class="navbar navbar-dark bg-custom-dark d-md-none p-3 shadow-sm">
+    <nav class="navbar navbar-dark bg-dark d-md-none p-3 shadow-sm">
         <div class="container-fluid">
-            <span class="navbar-brand sidebar-brand text-butter fs-4 m-0">Admin Panel</span>
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-brand fw-bold" style="color: var(--butter);">Admin Panel</span>
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#adminSidebar" aria-controls="adminSidebar" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
         </div>
@@ -184,24 +192,25 @@ $assignments = mysqli_query($conn, "
         <div class="row">
 
             <!-- Sidebar Navigation -->
-            <div class="col-md-3 col-lg-2 bg-custom-dark text-white min-vh-md-100 p-3 collapse d-md-block" id="sidebarMenu">
-                <h4 class="text-center sidebar-brand text-butter fs-4 pb-3 mb-4 border-bottom border-secondary border-opacity-25 d-none d-md-block">Admin Panel</h4>
+            <div id="adminSidebar" class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3 collapse d-md-block">
+                <h4 class="text-center mb-4 d-none d-md-block">Admin Panel</h4>
 
-                <div class="nav flex-column gap-1">
-                    <a href="dashboard.php" class="nav-link nav-link-custom"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
-                    <a href="students.php" class="nav-link nav-link-custom"><i class="bi bi-people me-2"></i>Manage Students</a>
-                    <a href="courses.php" class="nav-link nav-link-custom"><i class="bi bi-book me-2"></i>Manage Courses</a>
-                    <a href="assignments.php" class="nav-link nav-link-custom active"><i class="bi bi-journal-text me-2"></i>Manage Assignments</a>
-                    <a href="fees.php" class="nav-link nav-link-custom"><i class="bi bi-cash-stack me-2"></i>Manage Fees</a>
-                    <a href="results.php" class="nav-link nav-link-custom"><i class="bi bi-award me-2"></i>Upload Results</a>
-                    <a href="notices.php" class="nav-link nav-link-custom"><i class="bi bi-megaphone me-2"></i>Post Notice</a>
-                    <a href="logout.php" class="nav-link nav-link-custom text-danger mt-3"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+                <div class="nav flex-column">
+                    <a href="dashboard.php" class="nav-link text-white mb-2"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+                    <a href="students.php" class="nav-link text-white mb-2"><i class="bi bi-people me-2"></i>Manage Students</a>
+                    <a href="courses.php" class="nav-link text-white mb-2"><i class="bi bi-book me-2"></i>Manage Courses</a>
+                    <a href="assignments.php" class="nav-link text-white mb-2 active"><i class="bi bi-journal-text me-2"></i>Manage Assignments</a>
+                    <a href="fees.php" class="nav-link text-white mb-2"><i class="bi bi-cash-stack me-2"></i>Manage Fees</a>
+                    <a href="timetable.php" class="nav-link text-white mb-2"><i class="bi bi-calendar-week me-2"></i>Timetable</a>
+                    <a href="results.php" class="nav-link text-white mb-2"><i class="bi bi-award me-2"></i>Upload Results</a>
+                    <a href="notices.php" class="nav-link text-white mb-2"><i class="bi bi-megaphone me-2"></i>Post Notice</a>
+                    <a href="logout.php" class="nav-link text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
                 </div>
             </div>
 
             <!-- Main Content Area -->
-            <div class="col-md-9 col-lg-10 p-3 p-md-4">
-                <h2 class="custom-heading fw-bold mb-4">Manage Assignments</h2>
+            <div class="col-md-9 col-lg-10 p-4">
+                <h2 class="custom-heading mb-4">Manage Assignments</h2>
 
                 <!-- Form Section -->
                 <div class="card border-0 shadow-sm rounded-3 mb-5 border-top border-4 border-success">

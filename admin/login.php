@@ -8,70 +8,75 @@ if (isset($_SESSION["admin_id"]) && $_SESSION["admin_role"] === "admin") {
     exit;
 }
 
+// Initialize rate limiting in session
+if (!isset($_SESSION['login_attempts'])) {
+    $_SESSION['login_attempts'] = 0;
+    $_SESSION['lockout_time'] = 0;
+}
+
+$lockout_duration = 30; // Lockout duration in seconds
 $error = "";
 $submitted_username = "";
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $username = trim($_POST["username"] ?? "");
-    $password = $_POST["password"] ?? "";
-    $submitted_username = $username;
+// Check if user is currently locked out
+if ($_SESSION['login_attempts'] >= 5 && (time() - $_SESSION['lockout_time']) < $lockout_duration) {
+    $remaining = $lockout_duration - (time() - $_SESSION['lockout_time']);
+    $error = "Too many failed attempts. Please try again in {$remaining} seconds.";
+} else {
+    if ($_SESSION['login_attempts'] >= 5) {
+        $_SESSION['login_attempts'] = 0; // Reset after lockout expires
+    }
 
-    if (empty($username) || empty($password)) {
-        $error = "Please fill in all fields.";
-    } else {
-        $sql = "SELECT id, username, password FROM admins WHERE username = ? LIMIT 1";
-        $stmt = mysqli_prepare($conn, $sql);
+    if ($_SERVER["REQUEST_METHOD"] === "POST") {
+        $username = trim($_POST["username"] ?? "");
+        $password = $_POST["password"] ?? "";
+        $submitted_username = $username;
 
-        if ($stmt) {
-            mysqli_stmt_bind_param($stmt, "s", $username);
-            mysqli_stmt_execute($stmt);
+        if (empty($username) || empty($password)) {
+            $error = "Please fill in all fields.";
+        } else {
+            $sql = "SELECT id, username, password FROM admins WHERE username = ? LIMIT 1";
+            $stmt = mysqli_prepare($conn, $sql);
 
-            $result = mysqli_stmt_get_result($stmt);
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, "s", $username);
+                mysqli_stmt_execute($stmt);
+                $result = mysqli_stmt_get_result($stmt);
 
-            if ($result && mysqli_num_rows($result) === 1) {
-                $admin = mysqli_fetch_assoc($result);
+                if ($result && mysqli_num_rows($result) === 1) {
+                    $admin = mysqli_fetch_assoc($result);
 
-                $is_password_correct = false;
-                $needs_rehash = false;
+                    // Strictly use secure password verification (removed insecure plaintext/MD5 fallbacks)
+                    if (password_verify($password, $admin["password"])) {
+                        // Reset login attempts on success
+                        $_SESSION['login_attempts'] = 0;
 
-                // Check Plaintext, MD5, or Bcrypt
-                if (password_verify($password, $admin["password"])) {
-                    $is_password_correct = true;
-                } elseif ($password === $admin["password"] || md5($password) === $admin["password"]) {
-                    $is_password_correct = true;
-                    $needs_rehash = true; // Flag for auto-upgrade to secure hash
-                }
+                        // Secure Session Setup
+                        session_regenerate_id(true);
+                        $_SESSION["admin_id"] = $admin["id"];
+                        $_SESSION["admin_username"] = $admin["username"];
+                        $_SESSION["admin_role"] = "admin";
 
-                if ($is_password_correct) {
-                    // Auto-upgrade legacy plaintext/MD5 password to modern Bcrypt hash
-                    if ($needs_rehash) {
-                        $new_hash = password_hash($password, PASSWORD_DEFAULT);
-                        $update_stmt = mysqli_prepare($conn, "UPDATE admins SET password = ? WHERE id = ?");
-                        if ($update_stmt) {
-                            mysqli_stmt_bind_param($update_stmt, "si", $new_hash, $admin["id"]);
-                            mysqli_stmt_execute($update_stmt);
-                            mysqli_stmt_close($update_stmt);
-                        }
+                        unset($_SESSION["student_id"]);
+                        unset($_SESSION["student_name"]);
+
+                        header("Location: dashboard.php");
+                        exit;
                     }
-
-                    // Secure Session Setup
-                    session_regenerate_id(true);
-                    $_SESSION["admin_id"] = $admin["id"];
-                    $_SESSION["admin_username"] = $admin["username"];
-                    $_SESSION["admin_role"] = "admin";
-
-                    unset($_SESSION["student_id"]);
-                    unset($_SESSION["student_name"]);
-
-                    header("Location: dashboard.php");
-                    exit;
                 }
+
+                mysqli_stmt_close($stmt);
             }
 
-            mysqli_stmt_close($stmt);
+            // Increment failed attempts and handle lockout
+            $_SESSION['login_attempts']++;
+            if ($_SESSION['login_attempts'] >= 5) {
+                $_SESSION['lockout_time'] = time();
+                $error = "Too many failed attempts. Account temporarily locked for {$lockout_duration} seconds.";
+            } else {
+                $error = "Invalid username or password.";
+            }
         }
-
-        $error = "Invalid username or password.";
     }
 }
 ?>
@@ -164,7 +169,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                                 <label class="form-label" for="password">Password</label>
                                 <input type="password" id="password" name="password" class="form-control" required>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">Login</button>
+                            <button type="submit" class="btn btn-primary w-100" <?php echo ($_SESSION['login_attempts'] >= 5 && (time() - $_SESSION['lockout_time']) < $lockout_duration) ? 'disabled' : ''; ?>>Login</button>
                         </form>
                     </div>
                 </div>
