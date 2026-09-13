@@ -16,21 +16,50 @@ if (!isset($_SESSION["admin_id"]) || ($_SESSION["admin_role"] ?? '') !== "admin"
     exit;
 }
 
-$student_result = @mysqli_query($conn, "SELECT COUNT(*) AS total_students FROM students");
-$student_data = $student_result ? mysqli_fetch_assoc($student_result) : ['total_students' => 0];
-$total_students = $student_data["total_students"] ?? 0;
+// Safe database query execution to handle missing tables gracefully
+$total_students = 0;
+try {
+    $res = mysqli_query($conn, "SELECT COUNT(*) AS total FROM students");
+    if ($res) {
+        $row = mysqli_fetch_assoc($res);
+        $total_students = $row['total'] ?? 0;
+    }
+} catch (Throwable $e) {
+    $total_students = 0;
+}
 
-$course_result = @mysqli_query($conn, "SELECT COUNT(*) AS total_courses FROM courses");
-$course_data = $course_result ? mysqli_fetch_assoc($course_result) : ['total_courses' => 0];
-$total_courses = $course_data["total_courses"] ?? 0;
+$total_courses = 0;
+try {
+    $res = mysqli_query($conn, "SELECT COUNT(*) AS total FROM courses");
+    if ($res) {
+        $row = mysqli_fetch_assoc($res);
+        $total_courses = $row['total'] ?? 0;
+    }
+} catch (Throwable $e) {
+    $total_courses = 0;
+}
 
-$assignment_result = @mysqli_query($conn, "SELECT COUNT(*) AS total_assignments FROM assignments");
-$assignment_data = $assignment_result ? mysqli_fetch_assoc($assignment_result) : ['total_assignments' => 0];
-$total_assignments = $assignment_data["total_assignments"] ?? 0;
+$total_assignments = 0;
+try {
+    $res = mysqli_query($conn, "SELECT COUNT(*) AS total FROM assignments");
+    if ($res) {
+        $row = mysqli_fetch_assoc($res);
+        $total_assignments = $row['total'] ?? 0;
+    }
+} catch (Throwable $e) {
+    $total_assignments = 0;
+}
 
-$notice_result = @mysqli_query($conn, "SELECT COUNT(*) AS total_notices FROM notices");
-$notice_data = $notice_result ? mysqli_fetch_assoc($notice_result) : ['total_notices' => 0];
-$total_notices = $notice_data["total_notices"] ?? 0;
+$total_notices = 0;
+try {
+    $res = mysqli_query($conn, "SELECT COUNT(*) AS total FROM notices");
+    if ($res) {
+        $row = mysqli_fetch_assoc($res);
+        $total_notices = $row['total'] ?? 0;
+    }
+} catch (Throwable $e) {
+    $total_notices = 0;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -177,7 +206,7 @@ $total_notices = $notice_data["total_notices"] ?? 0;
                     <a href="assignments.php" class="nav-link text-white mb-2">Manage Assignments</a>
                     <a href="timetable.php" class="nav-link text-white mb-2">Timetable</a>
                     <a href="results.php" class="nav-link text-white mb-2">Upload Results</a>
-                    <a href="notice.php" class="nav-link text-white mb-2">Post Notice</a>
+                    <a href="notices.php" class="nav-link text-white mb-2">Post Notice</a>
                     <a href="logout.php" class="nav-link text-danger">Logout</a>
                 </div>
             </div>
