@@ -33,7 +33,7 @@ $total_notices = $notice_data["total_notices"];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <link href="https:
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
         :root {
@@ -158,7 +158,7 @@ $total_notices = $notice_data["total_notices"];
     <div class="container-fluid">
         <div class="row">
 
-<div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3">
+            <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3">
                 <h4 class="text-center mb-4">Admin Panel</h4>
 
                 <div class="nav flex-column">
@@ -171,16 +171,16 @@ $total_notices = $notice_data["total_notices"];
                 </div>
             </div>
 
-<div class="col-md-9 col-lg-10 p-4">
+            <div class="col-md-9 col-lg-10 p-4">
                 <h2 class="mb-4">Admin Dashboard</h2>
 
                 <p class="mb-4">
                     Welcome, <?php echo htmlspecialchars($_SESSION["admin_username"]); ?>!
                 </p>
 
-<div class="row g-4">
+                <div class="row g-4">
 
-<div class="col-md-6 col-xl-3">
+                    <div class="col-md-6 col-xl-3">
                         <div class="card shadow-sm">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Total Students</h5>
@@ -189,7 +189,7 @@ $total_notices = $notice_data["total_notices"];
                         </div>
                     </div>
 
-<div class="col-md-6 col-xl-3">
+                    <div class="col-md-6 col-xl-3">
                         <div class="card shadow-sm">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Total Courses</h5>
@@ -198,7 +198,7 @@ $total_notices = $notice_data["total_notices"];
                         </div>
                     </div>
 
-<div class="col-md-6 col-xl-3">
+                    <div class="col-md-6 col-xl-3">
                         <div class="card shadow-sm">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Total Assignments</h5>
@@ -207,7 +207,7 @@ $total_notices = $notice_data["total_notices"];
                         </div>
                     </div>
 
-<div class="col-md-6 col-xl-3">
+                    <div class="col-md-6 col-xl-3">
                         <div class="card shadow-sm">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Total Notices</h5>
