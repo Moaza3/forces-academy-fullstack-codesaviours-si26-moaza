@@ -20,7 +20,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if (mysqli_num_rows($result) === 1) {
             $admin = mysqli_fetch_assoc($result);
 
-            if (password_verify($password, $admin["password"])) {
+            // Plaintext, MD5, aur Bcrypt Teeno Check Karega
+            if (
+                $password === $admin["password"] || 
+                md5($password) === $admin["password"] || 
+                password_verify($password, $admin["password"])
+            ) {
                 $_SESSION["admin_id"] = $admin["id"];
                 $_SESSION["admin_username"] = $admin["username"];
                 $_SESSION["admin_role"] = "admin";
