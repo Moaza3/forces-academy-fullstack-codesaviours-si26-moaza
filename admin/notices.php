@@ -9,42 +9,57 @@ if (!isset($_SESSION["admin_id"]) || $_SESSION["admin_role"] !== "admin") {
 
 $error = "";
 $success = "";
+$title_val = "";
+$content_val = "";
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $title = trim($_POST["title"]);
-    $content = trim($_POST["content"]);
+// Handle Notice Posting
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["post_notice"])) {
+    $title = trim($_POST["title"] ?? "");
+    $content = trim($_POST["content"] ?? "");
+    $title_val = $title;
+    $content_val = $content;
 
     if (empty($title) || empty($content)) {
         $error = "All fields are required.";
     } else {
-        $posted_by = $_SESSION["admin_username"];
+        $posted_by = $_SESSION["admin_username"] ?? "Admin";
 
         $sql = "INSERT INTO notices (title, content, posted_by) VALUES (?, ?, ?)";
         $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "sss", $title, $content, $posted_by);
 
-        if (mysqli_stmt_execute($stmt)) {
-            mysqli_stmt_close($stmt);
-            header("Location: notices.php?success=1");
-            exit;
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "sss", $title, $content, $posted_by);
+
+            if (mysqli_stmt_execute($stmt)) {
+                mysqli_stmt_close($stmt);
+                header("Location: notices.php?success=1");
+                exit;
+            } else {
+                $error = "Notice could not be posted. Please try again.";
+                mysqli_stmt_close($stmt);
+            }
         } else {
-            $error = "Notice could not be posted.";
-            mysqli_stmt_close($stmt);
+            $error = "Database error. Please try again.";
         }
     }
 }
 
-if (isset($_GET["delete"])) {
-    $notice_id = (int) $_GET["delete"];
+// Handle Notice Deletion (POST Method for Security)
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["delete_notice"])) {
+    $notice_id = (int) ($_POST["notice_id"] ?? 0);
 
-    $sql = "DELETE FROM notices WHERE id = ?";
-    $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, "i", $notice_id);
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
+    if ($notice_id > 0) {
+        $sql = "DELETE FROM notices WHERE id = ?";
+        $stmt = mysqli_prepare($conn, $sql);
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "i", $notice_id);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
 
-    header("Location: notices.php?deleted=1");
-    exit;
+            header("Location: notices.php?deleted=1");
+            exit;
+        }
+    }
 }
 
 if (isset($_GET["success"])) {
@@ -55,10 +70,7 @@ if (isset($_GET["deleted"])) {
     $success = "Notice deleted successfully.";
 }
 
-$sql = "SELECT id, title, content, posted_by, created_at
-        FROM notices
-        ORDER BY created_at DESC";
-
+$sql = "SELECT id, title, content, posted_by, created_at FROM notices ORDER BY created_at DESC";
 $result = mysqli_query($conn, $sql);
 ?>
 <!DOCTYPE html>
@@ -217,7 +229,7 @@ $result = mysqli_query($conn, $sql);
                     <a href="courses.php" class="nav-link text-white mb-2">Manage Courses</a>
                     <a href="assignments.php" class="nav-link text-white mb-2">Manage Assignments</a>
                     <a href="results.php" class="nav-link text-white mb-2">Upload Results</a>
-                    <a href="notices.php" class="nav-link text-white mb-2">Post Notice</a>
+                    <a href="notices.php" class="nav-link text-white mb-2 fw-bold active">Post Notice</a>
                     <a href="logout.php" class="nav-link text-danger">Logout</a>
                 </div>
             </div>
@@ -226,14 +238,16 @@ $result = mysqli_query($conn, $sql);
                 <h2 class="mb-4">Post Notice</h2>
 
                 <?php if ($error !== ""): ?>
-                    <div class="alert alert-danger">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <?php echo htmlspecialchars($error); ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
 
                 <?php if ($success !== ""): ?>
-                    <div class="alert alert-success">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <?php echo htmlspecialchars($success); ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
 
@@ -241,15 +255,16 @@ $result = mysqli_query($conn, $sql);
                     <div class="card-body">
                         <h4 class="mb-3">Add New Notice</h4>
 
-                        <form method="POST">
+                        <form method="POST" action="">
+                            <input type="hidden" name="post_notice" value="1">
                             <div class="mb-3">
-                                <label class="form-label">Title</label>
-                                <input type="text" name="title" class="form-control" required>
+                                <label class="form-label" for="title">Title</label>
+                                <input type="text" id="title" name="title" class="form-control" value="<?php echo htmlspecialchars($title_val); ?>" required>
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Content</label>
-                                <textarea name="content" class="form-control" rows="5" required></textarea>
+                                <label class="form-label" for="content">Content</label>
+                                <textarea id="content" name="content" class="form-control" rows="5" required><?php echo htmlspecialchars($content_val); ?></textarea>
                             </div>
 
                             <button type="submit" class="btn btn-primary">Post Notice</button>
@@ -261,9 +276,9 @@ $result = mysqli_query($conn, $sql);
                     <div class="card-body">
                         <h4 class="mb-3">All Notices</h4>
 
-                        <?php if (mysqli_num_rows($result) > 0): ?>
+                        <?php if ($result && mysqli_num_rows($result) > 0): ?>
                             <?php while ($notice = mysqli_fetch_assoc($result)): ?>
-                                <div class="card mb-3">
+                                <div class="card mb-3 border shadow-sm">
                                     <div class="card-body">
                                         <h5 class="card-title">
                                             <?php echo htmlspecialchars($notice["title"]); ?>
@@ -273,18 +288,17 @@ $result = mysqli_query($conn, $sql);
                                             <?php echo nl2br(htmlspecialchars($notice["content"])); ?>
                                         </p>
 
-                                        <p class="text-muted mb-2">
-                                            Posted by: <?php echo htmlspecialchars($notice["posted_by"]); ?>
-                                            | <?php echo htmlspecialchars($notice["created_at"]); ?>
+                                        <p class="text-muted mb-3 small">
+                                            Posted by: <strong><?php echo htmlspecialchars($notice["posted_by"]); ?></strong> | 
+                                            <?php echo date("d M Y, h:i A", strtotime($notice["created_at"])); ?>
                                         </p>
 
-                                        <a
-                                            href="notices.php?delete=<?php echo $notice["id"]; ?>"
-                                            class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Are you sure you want to delete this notice?');"
-                                        >
-                                            Delete
-                                        </a>
+                                        <form method="POST" action="" onsubmit="return confirm('Are you sure you want to delete this notice?');">
+                                            <input type="hidden" name="notice_id" value="<?php echo (int) $notice["id"]; ?>">
+                                            <button type="submit" name="delete_notice" class="btn btn-sm btn-danger">
+                                                Delete
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             <?php endwhile; ?>
@@ -298,5 +312,6 @@ $result = mysqli_query($conn, $sql);
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

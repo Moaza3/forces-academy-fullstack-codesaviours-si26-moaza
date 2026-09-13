@@ -3,13 +3,19 @@ session_start();
 
 include('../config/db.php');
 
+// Admin Authentication Guard
+if (!isset($_SESSION["admin_id"]) || $_SESSION["admin_role"] !== "admin") {
+    header("Location: login.php");
+    exit;
+}
+
 $msg = '';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $student_id = isset($_POST['student_id']) ? (int) $_POST['student_id'] : 0;
-    $amount = isset($_POST['amount']) ? (float) $_POST['amount'] : 0;
+    $amount = isset($_POST['amount']) ? (float) $_POST['amount'] : 0.0;
     $due_date = isset($_POST['due_date']) ? trim($_POST['due_date']) : '';
     $description = isset($_POST['description']) ? trim($_POST['description']) : '';
 
@@ -29,23 +35,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $check->bind_param("i", $student_id);
             $check->execute();
-
             $student_result = $check->get_result();
 
             if ($student_result->num_rows === 0) {
-
                 $error = "Invalid student selected.";
-
             } else {
 
                 $stmt = $conn->prepare(
-                    "INSERT INTO fees
-                    (student_id, amount, due_date, paid_date, status, description)
-                    VALUES (?, ?, ?, NULL, 'pending', ?)"
+                    "INSERT INTO fees (student_id, amount, due_date, paid_date, status, description) VALUES (?, ?, ?, NULL, 'pending', ?)"
                 );
 
                 if ($stmt) {
-
+                    // Fixed bind_param format string: 'i' = int, 'd' = double/float, 's' = string
                     $stmt->bind_param(
                         "idss",
                         $student_id,
@@ -76,31 +77,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $students = $conn->query(
-    "SELECT id, name
-     FROM users
-     WHERE role = 'student'
-     ORDER BY name ASC"
+    "SELECT id, name FROM users WHERE role = 'student' ORDER BY name ASC"
 );
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Admin - Fee Management</title>
-
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-
         :root {
             --butter: #FFEFB3;
             --green: #013E37;
@@ -170,7 +159,6 @@ $students = $conn->query(
         }
 
         @media (max-width: 576px) {
-
             .page-wrapper {
                 width: 100%;
             }
@@ -182,197 +170,83 @@ $students = $conn->query(
             .page-title {
                 font-size: 24px;
             }
-
         }
-
     </style>
-
 </head>
 
 <body>
 
 <div class="container-fluid py-4">
-
     <div class="page-wrapper">
 
         <div class="mb-4">
-
-            <h2 class="page-title mb-1">
-                Fee Management
-            </h2>
-
-            <p class="text-muted mb-0">
-                Add a new fee record for a student
-            </p>
-
+            <h2 class="page-title mb-1">Fee Management</h2>
+            <p class="text-muted mb-0">Add a new fee record for a student</p>
         </div>
 
-
         <?php if (!empty($msg)): ?>
-
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-
-                <strong>Success!</strong>
-                <?php echo htmlspecialchars($msg); ?>
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert"
-                ></button>
-
+                <strong>Success!</strong> <?php echo htmlspecialchars($msg); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-
         <?php endif; ?>
-
 
         <?php if (!empty($error)): ?>
-
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-
-                <strong>Error!</strong>
-                <?php echo htmlspecialchars($error); ?>
-
-                <button
-                    type="button"
-                    class="btn-close"
-                    data-bs-dismiss="alert"
-                ></button>
-
+                <strong>Error!</strong> <?php echo htmlspecialchars($error); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-
         <?php endif; ?>
 
-
         <div class="card fee-card shadow-sm">
-
             <div class="card-body p-4 p-md-5">
 
                 <form method="POST" action="">
 
                     <div class="mb-4">
-
-                        <label for="student_id" class="form-label">
-                            Select Student
-                        </label>
-
-                        <select
-                            name="student_id"
-                            id="student_id"
-                            class="form-select"
-                            required
-                        >
-
-                            <option value="">
-                                Select Student
-                            </option>
-
+                        <label for="student_id" class="form-label">Select Student</label>
+                        <select name="student_id" id="student_id" class="form-select" required>
+                            <option value="">Select Student</option>
                             <?php if ($students && $students->num_rows > 0): ?>
-
                                 <?php while ($row = $students->fetch_assoc()): ?>
-
-                                    <option
-                                        value="<?php echo (int) $row['id']; ?>"
-                                    >
+                                    <option value="<?php echo (int) $row['id']; ?>" <?php echo (isset($_POST['student_id']) && $_POST['student_id'] == $row['id']) ? 'selected' : ''; ?>>
                                         <?php echo htmlspecialchars($row['name']); ?>
                                     </option>
-
                                 <?php endwhile; ?>
-
                             <?php else: ?>
-
-                                <option value="" disabled>
-                                    No students found
-                                </option>
-
+                                <option value="" disabled>No students found</option>
                             <?php endif; ?>
-
                         </select>
-
                     </div>
-
 
                     <div class="mb-4">
-
-                        <label for="amount" class="form-label">
-                            Amount (PKR)
-                        </label>
-
-                        <input
-                            type="number"
-                            name="amount"
-                            id="amount"
-                            class="form-control"
-                            placeholder="Enter fee amount"
-                            min="1"
-                            step="0.01"
-                            required
-                        >
-
+                        <label for="amount" class="form-label">Amount (PKR)</label>
+                        <input type="number" name="amount" id="amount" class="form-control" placeholder="Enter fee amount" min="1" step="0.01" value="<?php echo isset($_POST['amount']) ? htmlspecialchars($_POST['amount']) : ''; ?>" required>
                     </div>
-
 
                     <div class="mb-4">
-
-                        <label for="due_date" class="form-label">
-                            Due Date
-                        </label>
-
-                        <input
-                            type="date"
-                            name="due_date"
-                            id="due_date"
-                            class="form-control"
-                            required
-                        >
-
+                        <label for="due_date" class="form-label">Due Date</label>
+                        <input type="date" name="due_date" id="due_date" class="form-control" value="<?php echo isset($_POST['due_date']) ? htmlspecialchars($_POST['due_date']) : ''; ?>" required>
                     </div>
-
 
                     <div class="mb-4">
-
-                        <label for="description" class="form-label">
-                            Description
-                        </label>
-
-                        <input
-                            type="text"
-                            name="description"
-                            id="description"
-                            class="form-control"
-                            placeholder="e.g. Monthly Tuition Fee"
-                            maxlength="255"
-                        >
-
+                        <label for="description" class="form-label">Description</label>
+                        <input type="text" name="description" id="description" class="form-control" placeholder="e.g. Monthly Tuition Fee" maxlength="255" value="<?php echo isset($_POST['description']) ? htmlspecialchars($_POST['description']) : ''; ?>">
                     </div>
-
 
                     <div class="d-grid">
-
-                        <button
-                            type="submit"
-                            class="btn btn-primary btn-add"
-                        >
-                            Add Fee Record
-                        </button>
-
+                        <button type="submit" class="btn btn-primary btn-add">Add Fee Record</button>
                     </div>
 
                 </form>
 
             </div>
-
         </div>
 
     </div>
-
 </div>
 
-
-<script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
-</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
-
 </html>

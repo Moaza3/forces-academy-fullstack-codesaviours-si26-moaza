@@ -47,12 +47,18 @@ $result = mysqli_query($conn, $query);
             border-radius: 8px;
             padding: 10px 14px;
             transition: all 0.25s ease;
+            font-weight: 500;
         }
 
         .bg-dark .nav-link:hover {
             background-color: rgba(255, 239, 179, 0.15);
             color: var(--butter) !important;
             padding-left: 20px;
+        }
+
+        .bg-dark .nav-link.active {
+            background-color: rgba(255, 239, 179, 0.2);
+            color: var(--butter) !important;
         }
 
         .bg-dark .nav-link.text-danger {
@@ -84,6 +90,7 @@ $result = mysqli_query($conn, $query);
 
         .card {
             border-radius: 14px !important;
+            border: none !important;
             border-top: 4px solid var(--green) !important;
             transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
@@ -177,7 +184,7 @@ $result = mysqli_query($conn, $query);
                 <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
             </li>
             <li class="nav-item mb-2">
-                <a href="courses.php" class="nav-link text-white">My Courses</a>
+                <a href="courses.php" class="nav-link text-white fw-bold active">My Courses</a>
             </li>
             <li class="nav-item mb-2">
                 <a href="assignment.php" class="nav-link text-white">Assignments</a>
@@ -198,37 +205,38 @@ $result = mysqli_query($conn, $query);
         <h2 class="mb-4">My Courses</h2>
 
         <div class="row">
-            <?php if (mysqli_num_rows($result) > 0) { ?>
-                <?php while ($course = mysqli_fetch_assoc($result)) { ?>
+            <?php if ($result && mysqli_num_rows($result) > 0): ?>
+                <?php while ($course = mysqli_fetch_assoc($result)): ?>
                     <div class="col-md-4 mb-4">
                         <div class="card shadow-sm h-100">
                             <div class="card-body">
                                 <h5 class="card-title">
-                                    <?php echo htmlspecialchars($course['course_name']); ?>
+                                    <?php echo htmlspecialchars($course['course_name'] ?? ''); ?>
                                 </h5>
 
                                 <p class="card-text">
-                                    <?php echo htmlspecialchars($course['description']); ?>
+                                    <?php echo htmlspecialchars($course['description'] ?? ''); ?>
                                 </p>
 
-                                <p>
+                                <p class="mb-0">
                                     <strong>Teacher:</strong>
-                                    <?php echo htmlspecialchars($course['teacher_name']); ?>
+                                    <?php echo htmlspecialchars($course['teacher_name'] ?? 'N/A'); ?>
                                 </p>
                             </div>
                         </div>
                     </div>
-                <?php } ?>
-            <?php } else { ?>
+                <?php endwhile; ?>
+            <?php else: ?>
                 <div class="col-12">
                     <div class="alert alert-info">
-                        <h5>No Courses Available</h5>
-                        <p class="mb-0">There are no courses available at the moment. Please check again later.</p>
+                        <h5 class="fw-bold">No Courses Available</h5>
+                        <p class="mb-0">There are no courses assigned or available at the moment. Please check again later.</p>
                     </div>
                 </div>
-            <?php } ?>
+            <?php endif; ?>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

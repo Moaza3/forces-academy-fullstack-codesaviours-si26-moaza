@@ -1,73 +1,84 @@
 <?php
-
-require_once '../config/db.php';
 session_start();
+require_once "../config/db.php";
 
-if (isset($_POST['add_timetable'])) {
-
-    $class = $_POST['class'];
-    $day = $_POST['day'];
-    $time_slot = $_POST['time_slot'];
-    $subject = $_POST['subject'];
-    $teacher = $_POST['teacher'];
-
-    $stmt = mysqli_prepare(
-        $conn,
-        "INSERT INTO timetable (`class`, day, time_slot, subject, teacher)
-         VALUES (?, ?, ?, ?, ?)"
-    );
-
-    mysqli_stmt_bind_param(
-        $stmt,
-        "sssss",
-        $class,
-        $day,
-        $time_slot,
-        $subject,
-        $teacher
-    );
-
-    mysqli_stmt_execute($stmt);
-
-    header("Location: timetable.php");
+// Access Control
+if (!isset($_SESSION["admin_id"]) || $_SESSION["admin_role"] !== "admin") {
+    header("Location: login.php");
     exit;
 }
 
-if (isset($_GET['delete'])) {
+$message = "";
+if (isset($_GET["msg"])) {
+    if ($_GET["msg"] === "added") {
+        $message = "Timetable entry added successfully!";
+    } elseif ($_GET["msg"] === "deleted") {
+        $message = "Timetable entry deleted successfully!";
+    }
+}
 
-    $id = intval($_GET['delete']);
+// Handle Form Submission
+if (isset($_POST["add_timetable"])) {
+    $class = trim($_POST["class"]);
+    $day = trim($_POST["day"]);
+    $time_slot = trim($_POST["time_slot"]);
+    $subject = trim($_POST["subject"]);
+    $teacher = trim($_POST["teacher"]);
 
     $stmt = mysqli_prepare(
         $conn,
-        "DELETE FROM timetable WHERE id = ?"
+        "INSERT INTO timetable (`class`, day, time_slot, subject, teacher) VALUES (?, ?, ?, ?, ?)"
     );
 
-    mysqli_stmt_bind_param($stmt, "i", $id);
-    mysqli_stmt_execute($stmt);
+    if ($stmt) {
+        mysqli_stmt_bind_param(
+            $stmt,
+            "sssss",
+            $class,
+            $day,
+            $time_slot,
+            $subject,
+            $teacher
+        );
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
 
-    header("Location: timetable.php");
+    header("Location: timetable.php?msg=added");
     exit;
 }
 
-$result = mysqli_query(
-    $conn,
-    "SELECT * FROM timetable ORDER BY id DESC"
-);
+// Handle Deletion
+if (isset($_GET["delete"])) {
+    $id = intval($_GET["delete"]);
 
+    $stmt = mysqli_prepare($conn, "DELETE FROM timetable WHERE id = ?");
+
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, "i", $id);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_close($stmt);
+    }
+
+    header("Location: timetable.php?msg=deleted");
+    exit;
+}
+
+// Fetch Timetable Entries
+$fetch_stmt = mysqli_prepare($conn, "SELECT * FROM timetable ORDER BY id DESC");
+mysqli_stmt_execute($fetch_stmt);
+$result = mysqli_stmt_get_result($fetch_stmt);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Timetable Management | Forces Academy LMS</title>
 
     <style>
-
         * {
             box-sizing: border-box;
             margin: 0;
@@ -139,6 +150,17 @@ $result = mysqli_query(
         .page-heading p {
             color: #64748b;
             font-size: 15px;
+        }
+
+        .alert-banner {
+            background: #eaf5f2;
+            color: #013E37;
+            border: 1px solid #bce3d9;
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-weight: 600;
+            font-size: 14px;
         }
 
         .card {
@@ -220,7 +242,7 @@ $result = mysqli_query(
         .button-area {
             display: flex;
             justify-content: flex-end;
-            align-items: end;
+            align-items: flex-end;
         }
 
         .add-btn {
@@ -354,7 +376,6 @@ $result = mysqli_query(
         }
 
         @media (max-width: 991px) {
-
             .topbar {
                 padding: 15px 20px;
             }
@@ -375,151 +396,98 @@ $result = mysqli_query(
             .button-area {
                 justify-content: stretch;
             }
-
         }
-
     </style>
-
 </head>
-
 
 <body>
 
-
 <header class="topbar">
-
     <div class="logo">
-
         <div class="logo-icon">🎓</div>
-
         <h2>Forces Academy LMS</h2>
-
     </div>
-
     <div class="admin-badge">
         👤 Admin Panel
     </div>
-
 </header>
-
-
 
 <main class="container">
 
-
     <div class="page-heading">
-
         <h1>📅 Timetable Management</h1>
-
-        <p>
-            Add, view and manage class timetable entries easily.
-        </p>
-
+        <p>Add, view and manage class timetable entries easily.</p>
     </div>
 
-
+    <?php if ($message !== ""): ?>
+        <div class="alert-banner">
+            <?= htmlspecialchars($message) ?>
+        </div>
+    <?php endif; ?>
 
     <div class="card">
-
         <div class="card-header">
-
             <div class="card-icon">＋</div>
-
             <h2>Add Timetable Entry</h2>
-
         </div>
 
-
         <div class="form-body">
-
             <form method="POST">
-
                 <div class="form-grid">
-
-
                     <div class="form-group">
-
                         <label>Select Class</label>
-
                         <input
                             type="text"
                             name="class"
                             placeholder="Enter class"
                             required
                         >
-
                     </div>
 
-
-
                     <div class="form-group">
-
                         <label>Select Day</label>
-
                         <select name="day" required>
-
                             <option value="">Choose Day</option>
-
                             <option value="Monday">Monday</option>
                             <option value="Tuesday">Tuesday</option>
                             <option value="Wednesday">Wednesday</option>
                             <option value="Thursday">Thursday</option>
                             <option value="Friday">Friday</option>
                             <option value="Saturday">Saturday</option>
-
                         </select>
-
                     </div>
 
-
-
                     <div class="form-group">
-
                         <label>Time Slot</label>
-
                         <input
                             type="text"
                             name="time_slot"
                             placeholder="e.g. 10:00 - 11:00"
                             required
                         >
-
                     </div>
 
-
-
                     <div class="form-group">
-
                         <label>Subject</label>
-
                         <input
                             type="text"
                             name="subject"
                             placeholder="Enter subject"
                             required
                         >
-
                     </div>
 
-
-
                     <div class="form-group">
-
                         <label>Teacher Name</label>
-
                         <input
                             type="text"
                             name="teacher"
                             placeholder="Enter teacher name"
                             required
                         >
-
                     </div>
 
-
-
                     <div class="form-group button-area">
-
                         <button
                             type="submit"
                             name="add_timetable"
@@ -527,41 +495,23 @@ $result = mysqli_query(
                         >
                             ＋ Add Timetable
                         </button>
-
                     </div>
-
-
                 </div>
-
             </form>
-
         </div>
-
     </div>
 
-
-
     <div class="card">
-
         <div class="card-header">
-
             <div class="card-icon">☷</div>
-
             <h2>All Timetable Entries</h2>
-
         </div>
 
-
         <div class="table-body">
-
             <?php if (mysqli_num_rows($result) > 0): ?>
-
                 <table>
-
                     <thead>
-
                         <tr>
-
                             <th>ID</th>
                             <th>Class</th>
                             <th>Day</th>
@@ -569,66 +519,38 @@ $result = mysqli_query(
                             <th>Subject</th>
                             <th>Teacher</th>
                             <th>Action</th>
-
                         </tr>
-
                     </thead>
-
-
                     <tbody>
-
                         <?php while ($row = mysqli_fetch_assoc($result)): ?>
-
                             <tr>
-
                                 <td>
-
                                     <span class="id-badge">
                                         #<?= $row['id']; ?>
                                     </span>
-
                                 </td>
-
-
                                 <td>
-
                                     <span class="class-badge">
                                         <?= htmlspecialchars($row['class']); ?>
                                     </span>
-
                                 </td>
-
-
                                 <td>
-
                                     <span class="day-badge">
                                         <?= htmlspecialchars($row['day']); ?>
                                     </span>
-
                                 </td>
-
-
                                 <td>
                                     <?= htmlspecialchars($row['time_slot']); ?>
                                 </td>
-
-
                                 <td>
-
                                     <strong>
                                         <?= htmlspecialchars($row['subject']); ?>
                                     </strong>
-
                                 </td>
-
-
                                 <td>
                                     <?= htmlspecialchars($row['teacher']); ?>
                                 </td>
-
-
                                 <td>
-
                                     <a
                                         class="delete-btn"
                                         href="timetable.php?delete=<?= $row['id']; ?>"
@@ -636,51 +558,29 @@ $result = mysqli_query(
                                     >
                                         🗑 Delete
                                     </a>
-
                                 </td>
-
                             </tr>
-
                         <?php endwhile; ?>
-
                     </tbody>
-
                 </table>
-
             <?php else: ?>
-
                 <div class="empty-state">
-
                     <div class="empty-icon">
                         📅
                     </div>
-
                     <h3>No Timetable Entries Found</h3>
-
-                    <p>
-                        Add your first timetable entry using the form above.
-                    </p>
-
+                    <p>Add your first timetable entry using the form above.</p>
                 </div>
-
             <?php endif; ?>
-
+            <?php mysqli_stmt_close($fetch_stmt); ?>
         </div>
-
     </div>
-
 
 </main>
 
-
-
 <footer>
-
     Forces Academy LMS © 2026
-
 </footer>
 
-
 </body>
-
 </html>
