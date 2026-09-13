@@ -3,8 +3,6 @@
 require_once '../config/db.php';
 session_start();
 
-
-// Add timetable entry
 if (isset($_POST['add_timetable'])) {
 
     $class = $_POST['class'];
@@ -35,8 +33,6 @@ if (isset($_POST['add_timetable'])) {
     exit;
 }
 
-
-// Delete timetable entry
 if (isset($_GET['delete'])) {
 
     $id = intval($_GET['delete']);
@@ -53,8 +49,6 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-
-// Get all timetable entries
 $result = mysqli_query(
     $conn,
     "SELECT * FROM timetable ORDER BY id DESC"
@@ -81,16 +75,13 @@ $result = mysqli_query(
         }
 
         body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #f4f7fb;
+            font-family: 'Segoe UI', 'Poppins', Arial, sans-serif;
+            background: #f4f6f5;
             color: #1e293b;
         }
 
-
-        /* TOP HEADER */
-
         .topbar {
-            background: linear-gradient(135deg, #123b70, #2563eb);
+            background: linear-gradient(135deg, #013E37, #012a25);
             color: white;
             padding: 18px 40px;
             display: flex;
@@ -108,8 +99,8 @@ $result = mysqli_query(
         .logo-icon {
             width: 42px;
             height: 42px;
-            background: white;
-            color: #2563eb;
+            background: #FFEFB3;
+            color: #013E37;
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -123,14 +114,11 @@ $result = mysqli_query(
         }
 
         .admin-badge {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255,239,179,0.2);
             padding: 9px 15px;
             border-radius: 20px;
             font-size: 14px;
         }
-
-
-        /* MAIN */
 
         .container {
             width: 92%;
@@ -144,7 +132,7 @@ $result = mysqli_query(
 
         .page-heading h1 {
             font-size: 32px;
-            color: #123b70;
+            color: #013E37;
             margin-bottom: 8px;
         }
 
@@ -152,9 +140,6 @@ $result = mysqli_query(
             color: #64748b;
             font-size: 15px;
         }
-
-
-        /* CARDS */
 
         .card {
             background: white;
@@ -177,8 +162,8 @@ $result = mysqli_query(
             width: 42px;
             height: 42px;
             border-radius: 12px;
-            background: #e8f0ff;
-            color: #2563eb;
+            background: #FFEFB3;
+            color: #013E37;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -187,11 +172,8 @@ $result = mysqli_query(
 
         .card-header h2 {
             font-size: 20px;
-            color: #123b70;
+            color: #013E37;
         }
-
-
-        /* FORM */
 
         .form-body {
             padding: 25px;
@@ -230,9 +212,9 @@ $result = mysqli_query(
 
         input:focus,
         select:focus {
-            border-color: #2563eb;
+            border-color: #013E37;
             background: white;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.10);
+            box-shadow: 0 0 0 3px rgba(1, 62, 55, 0.10);
         }
 
         .button-area {
@@ -246,7 +228,7 @@ $result = mysqli_query(
             padding: 13px 20px;
             border: none;
             border-radius: 10px;
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            background: linear-gradient(135deg, #013E37, #012a25);
             color: white;
             font-size: 15px;
             font-weight: 600;
@@ -256,11 +238,8 @@ $result = mysqli_query(
 
         .add-btn:hover {
             transform: translateY(-1px);
-            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.25);
+            box-shadow: 0 6px 15px rgba(1, 62, 55, 0.25);
         }
-
-
-        /* TABLE */
 
         .table-body {
             padding: 0 25px 25px;
@@ -292,12 +271,12 @@ $result = mysqli_query(
         }
 
         tr:hover td {
-            background: #f8fbff;
+            background: rgba(255, 239, 179, 0.2);
         }
 
         .id-badge {
-            background: #e8f0ff;
-            color: #2563eb;
+            background: #FFEFB3;
+            color: #013E37;
             padding: 5px 9px;
             border-radius: 7px;
             font-weight: 600;
@@ -305,8 +284,8 @@ $result = mysqli_query(
         }
 
         .class-badge {
-            background: #eef6ff;
-            color: #1d4ed8;
+            background: #eaf5f2;
+            color: #013E37;
             padding: 6px 10px;
             border-radius: 8px;
             font-weight: 600;
@@ -339,9 +318,6 @@ $result = mysqli_query(
             background: #fee2e2;
         }
 
-
-        /* EMPTY STATE */
-
         .empty-state {
             text-align: center;
             padding: 55px 20px;
@@ -352,8 +328,8 @@ $result = mysqli_query(
             width: 65px;
             height: 65px;
             margin: 0 auto 15px;
-            background: #eaf1ff;
-            color: #2563eb;
+            background: #eaf5f2;
+            color: #013E37;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -370,9 +346,6 @@ $result = mysqli_query(
             font-size: 14px;
         }
 
-
-        /* FOOTER */
-
         footer {
             text-align: center;
             padding: 25px;
@@ -380,10 +353,7 @@ $result = mysqli_query(
             font-size: 13px;
         }
 
-
-        /* RESPONSIVE */
-
-        @media (max-width: 850px) {
+        @media (max-width: 991px) {
 
             .topbar {
                 padding: 15px 20px;
@@ -416,8 +386,6 @@ $result = mysqli_query(
 <body>
 
 
-<!-- HEADER -->
-
 <header class="topbar">
 
     <div class="logo">
@@ -436,8 +404,6 @@ $result = mysqli_query(
 
 
 
-<!-- MAIN CONTENT -->
-
 <main class="container">
 
 
@@ -452,8 +418,6 @@ $result = mysqli_query(
     </div>
 
 
-
-    <!-- ADD TIMETABLE CARD -->
 
     <div class="card">
 
@@ -473,8 +437,6 @@ $result = mysqli_query(
                 <div class="form-grid">
 
 
-                    <!-- CLASS -->
-
                     <div class="form-group">
 
                         <label>Select Class</label>
@@ -489,8 +451,6 @@ $result = mysqli_query(
                     </div>
 
 
-
-                    <!-- DAY -->
 
                     <div class="form-group">
 
@@ -513,8 +473,6 @@ $result = mysqli_query(
 
 
 
-                    <!-- TIME -->
-
                     <div class="form-group">
 
                         <label>Time Slot</label>
@@ -529,8 +487,6 @@ $result = mysqli_query(
                     </div>
 
 
-
-                    <!-- SUBJECT -->
 
                     <div class="form-group">
 
@@ -547,8 +503,6 @@ $result = mysqli_query(
 
 
 
-                    <!-- TEACHER -->
-
                     <div class="form-group">
 
                         <label>Teacher Name</label>
@@ -563,8 +517,6 @@ $result = mysqli_query(
                     </div>
 
 
-
-                    <!-- BUTTON -->
 
                     <div class="form-group button-area">
 
@@ -588,8 +540,6 @@ $result = mysqli_query(
     </div>
 
 
-
-    <!-- TABLE CARD -->
 
     <div class="card">
 

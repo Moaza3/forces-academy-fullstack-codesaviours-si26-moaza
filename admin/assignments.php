@@ -2,7 +2,6 @@
 
 include("../config/db.php");
 
-// 1. ADD NEW ASSIGNMENT
 if (isset($_POST['add_assignment'])) {
     $title = mysqli_real_escape_string($conn, $_POST['title']);
     $description = mysqli_real_escape_string($conn, $_POST['description']);
@@ -18,7 +17,6 @@ if (isset($_POST['add_assignment'])) {
     exit();
 }
 
-// 2. UPDATE ASSIGNMENT
 if (isset($_POST['update_assignment'])) {
     $id = (int) $_POST['assignment_id'];
     $title = mysqli_real_escape_string($conn, $_POST['title']);
@@ -39,7 +37,6 @@ if (isset($_POST['update_assignment'])) {
     exit();
 }
 
-// 3. DELETE ASSIGNMENT
 if (isset($_GET['delete'])) {
     $id = (int) $_GET['delete'];
 
@@ -49,7 +46,6 @@ if (isset($_GET['delete'])) {
     exit();
 }
 
-// FETCH EDIT DATA
 $edit_data = null;
 if (isset($_GET['edit'])) {
     $edit_id = (int) $_GET['edit'];
@@ -57,10 +53,8 @@ if (isset($_GET['edit'])) {
     $edit_data = mysqli_fetch_assoc($edit_query);
 }
 
-// FETCH COURSES
 $courses = mysqli_query($conn, "SELECT id, course_name FROM courses ORDER BY course_name ASC");
 
-// FETCH ALL ASSIGNMENTS
 $assignments = mysqli_query($conn, "
     SELECT assignment.*, courses.course_name
     FROM assignment
@@ -79,10 +73,17 @@ $assignments = mysqli_query($conn, "
     <title>Manage Assignments</title>
 
     <style>
+        :root {
+            --butter: #FFEFB3;
+            --green: #013E37;
+            --green-dark: #012a25;
+            --text-dark: #1a1a1a;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', 'Poppins', sans-serif;
             margin: 30px;
-            background: #f5f5f5;
+            background: #f4f6f5;
         }
 
         .container {
@@ -92,13 +93,21 @@ $assignments = mysqli_query($conn, "
 
         h1 {
             text-align: center;
+            color: var(--green);
+            font-weight: 700;
         }
 
         form {
             background: white;
             padding: 20px;
             margin-bottom: 30px;
-            border-radius: 8px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--green);
         }
 
         input,
@@ -108,54 +117,93 @@ $assignments = mysqli_query($conn, "
             padding: 10px;
             margin: 8px 0 15px;
             box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(1, 62, 55, 0.12);
         }
 
         button {
             padding: 10px 20px;
-            background: #e91e63;
+            background: var(--green);
             color: white;
             border: none;
+            border-radius: 8px;
+            font-weight: 600;
             cursor: pointer;
         }
 
+        button:hover {
+            background: var(--green-dark);
+        }
+
         .cancel-btn {
-            background: #666;
+            background: #6c757d;
             text-decoration: none;
             padding: 10px 20px;
             color: white;
             display: inline-block;
             margin-left: 10px;
+            border-radius: 8px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            min-width: 700px;
         }
 
         th,
         td {
             padding: 12px;
-            border: 1px solid #ddd;
+            border: 1px solid #eee;
             text-align: left;
         }
 
         th {
-            background: #e91e63;
+            background: var(--green);
             color: white;
+        }
+
+        tr:hover td {
+            background: rgba(255, 239, 179, 0.2);
         }
 
         a {
             text-decoration: none;
             margin-right: 10px;
+            font-weight: 600;
         }
 
         .delete {
-            color: red;
+            color: #dc3545;
         }
 
         .edit {
-            color: blue;
+            color: var(--green);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                margin: 15px;
+            }
+
+            form {
+                padding: 15px;
+            }
         }
     </style>
 </head>
@@ -210,54 +258,56 @@ $assignments = mysqli_query($conn, "
 
         <h2>All Assignments</h2>
 
-        <table>
-
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Course</th>
-                <th>Due Date</th>
-                <th>Actions</th>
-            </tr>
-
-            <?php while ($assignment = mysqli_fetch_assoc($assignments)) { ?>
+        <div class="table-wrap">
+            <table>
 
                 <tr>
-                    <td><?php echo $assignment['id']; ?></td>
-
-                    <td>
-                        <?php echo htmlspecialchars($assignment['title']); ?>
-                    </td>
-
-                    <td>
-                        <?php echo htmlspecialchars($assignment['description']); ?>
-                    </td>
-
-                    <td>
-                        <?php echo htmlspecialchars($assignment['course_name']); ?>
-                    </td>
-
-                    <td>
-                        <?php echo htmlspecialchars($assignment['due_date']); ?>
-                    </td>
-
-                    <td>
-                        <a class="edit" href="assignments.php?edit=<?php echo $assignment['id']; ?>">
-                            Edit
-                        </a>
-
-                        <a class="delete"
-                           href="assignments.php?delete=<?php echo $assignment['id']; ?>"
-                           onclick="return confirm('Are you sure you want to delete this assignment?');">
-                            Delete
-                        </a>
-                    </td>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Course</th>
+                    <th>Due Date</th>
+                    <th>Actions</th>
                 </tr>
 
-            <?php } ?>
+                <?php while ($assignment = mysqli_fetch_assoc($assignments)) { ?>
 
-        </table>
+                    <tr>
+                        <td><?php echo $assignment['id']; ?></td>
+
+                        <td>
+                            <?php echo htmlspecialchars($assignment['title']); ?>
+                        </td>
+
+                        <td>
+                            <?php echo htmlspecialchars($assignment['description']); ?>
+                        </td>
+
+                        <td>
+                            <?php echo htmlspecialchars($assignment['course_name']); ?>
+                        </td>
+
+                        <td>
+                            <?php echo htmlspecialchars($assignment['due_date']); ?>
+                        </td>
+
+                        <td>
+                            <a class="edit" href="assignments.php?edit=<?php echo $assignment['id']; ?>">
+                                Edit
+                            </a>
+
+                            <a class="delete"
+                               href="assignments.php?delete=<?php echo $assignment['id']; ?>"
+                               onclick="return confirm('Are you sure you want to delete this assignment?');">
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+
+                <?php } ?>
+
+            </table>
+        </div>
 
     </div>
 

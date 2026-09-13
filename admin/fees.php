@@ -1,4 +1,3 @@
-```php
 <?php
 session_start();
 
@@ -7,12 +6,6 @@ include('../config/db.php');
 $msg = '';
 $error = '';
 
-/*
-|--------------------------------------------------------------------------
-| ADD FEE RECORD
-|--------------------------------------------------------------------------
-*/
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $student_id = isset($_POST['student_id']) ? (int) $_POST['student_id'] : 0;
@@ -20,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $due_date = isset($_POST['due_date']) ? trim($_POST['due_date']) : '';
     $description = isset($_POST['description']) ? trim($_POST['description']) : '';
 
-    // Basic validation
     if ($student_id <= 0) {
         $error = "Please select a student.";
     } elseif ($amount <= 0) {
@@ -29,11 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Please select a due date.";
     } else {
 
-        /*
-        |----------------------------------------------------------------------
-        | Check that selected user is actually a student
-        |----------------------------------------------------------------------
-        */
         $check = $conn->prepare(
             "SELECT id FROM users WHERE id = ? AND role = 'student' LIMIT 1"
         );
@@ -51,13 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             } else {
 
-                /*
-                |------------------------------------------------------------------
-                | Insert fee
-                |------------------------------------------------------------------
-                | paid_date is NULL because a newly added fee is pending.
-                | status is automatically set to pending.
-                */
                 $stmt = $conn->prepare(
                     "INSERT INTO fees
                     (student_id, amount, due_date, paid_date, status, description)
@@ -95,13 +75,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| FETCH STUDENTS FOR DROPDOWN
-|--------------------------------------------------------------------------
-*/
-
 $students = $conn->query(
     "SELECT id, name
      FROM users
@@ -121,7 +94,6 @@ $students = $conn->query(
 
     <title>Admin - Fee Management</title>
 
-    <!-- Bootstrap 5 -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet"
@@ -129,8 +101,16 @@ $students = $conn->query(
 
     <style>
 
+        :root {
+            --butter: #FFEFB3;
+            --green: #013E37;
+            --green-dark: #012a25;
+            --text-dark: #1a1a1a;
+        }
+
         body {
-            background-color: #f5f7fb;
+            background-color: #f4f6f5;
+            font-family: 'Segoe UI', 'Poppins', sans-serif;
         }
 
         .page-wrapper {
@@ -140,21 +120,39 @@ $students = $conn->query(
 
         .fee-card {
             border: none;
-            border-radius: 15px;
+            border-radius: 16px;
         }
 
         .page-title {
             font-weight: 700;
+            color: var(--green);
         }
 
         .form-label {
             font-weight: 600;
+            color: var(--green);
         }
 
         .form-control,
         .form-select {
             min-height: 48px;
             border-radius: 10px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--green);
+            box-shadow: 0 0 0 0.2rem rgba(1, 62, 55, 0.15);
+        }
+
+        .btn-primary {
+            background-color: var(--green) !important;
+            border-color: var(--green) !important;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--green-dark) !important;
+            border-color: var(--green-dark) !important;
         }
 
         .btn-add {
@@ -165,6 +163,10 @@ $students = $conn->query(
 
         .alert {
             border-radius: 10px;
+        }
+
+        .alert-success {
+            border-left: 4px solid var(--green);
         }
 
         @media (max-width: 576px) {
@@ -193,7 +195,6 @@ $students = $conn->query(
 
     <div class="page-wrapper">
 
-        <!-- Page Heading -->
         <div class="mb-4">
 
             <h2 class="page-title mb-1">
@@ -207,7 +208,6 @@ $students = $conn->query(
         </div>
 
 
-        <!-- Success Message -->
         <?php if (!empty($msg)): ?>
 
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -226,7 +226,6 @@ $students = $conn->query(
         <?php endif; ?>
 
 
-        <!-- Error Message -->
         <?php if (!empty($error)): ?>
 
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -245,14 +244,12 @@ $students = $conn->query(
         <?php endif; ?>
 
 
-        <!-- Add Fee Card -->
         <div class="card fee-card shadow-sm">
 
             <div class="card-body p-4 p-md-5">
 
                 <form method="POST" action="">
 
-                    <!-- Student -->
                     <div class="mb-4">
 
                         <label for="student_id" class="form-label">
@@ -295,7 +292,6 @@ $students = $conn->query(
                     </div>
 
 
-                    <!-- Amount -->
                     <div class="mb-4">
 
                         <label for="amount" class="form-label">
@@ -316,7 +312,6 @@ $students = $conn->query(
                     </div>
 
 
-                    <!-- Due Date -->
                     <div class="mb-4">
 
                         <label for="due_date" class="form-label">
@@ -334,7 +329,6 @@ $students = $conn->query(
                     </div>
 
 
-                    <!-- Description -->
                     <div class="mb-4">
 
                         <label for="description" class="form-label">
@@ -353,7 +347,6 @@ $students = $conn->query(
                     </div>
 
 
-                    <!-- Submit Button -->
                     <div class="d-grid">
 
                         <button
@@ -376,7 +369,6 @@ $students = $conn->query(
 </div>
 
 
-<!-- Bootstrap JS -->
 <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
 </script>
@@ -384,4 +376,3 @@ $students = $conn->query(
 </body>
 
 </html>
-```

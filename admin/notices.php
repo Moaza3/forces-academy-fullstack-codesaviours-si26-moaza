@@ -68,6 +68,140 @@ $result = mysqli_query($conn, $sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Post Notice</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --butter: #FFEFB3;
+            --green: #013E37;
+            --green-dark: #012a25;
+            --text-dark: #1a1a1a;
+        }
+
+        body.bg-light {
+            background-color: #f4f6f5 !important;
+            font-family: 'Segoe UI', 'Poppins', sans-serif;
+        }
+
+        .bg-dark {
+            background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%) !important;
+        }
+
+        .bg-dark h4 {
+            color: var(--butter) !important;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 239, 179, 0.2);
+        }
+
+        .bg-dark .nav-link {
+            border-radius: 8px;
+            padding: 10px 14px;
+            transition: all 0.25s ease;
+            font-weight: 500;
+        }
+
+        .bg-dark .nav-link:hover {
+            background-color: rgba(255, 239, 179, 0.15);
+            color: var(--butter) !important;
+            padding-left: 20px;
+        }
+
+        .bg-dark .nav-link.text-danger {
+            color: #ff6b6b !important;
+            margin-top: 10px;
+        }
+
+        .bg-dark .nav-link.text-danger:hover {
+            background-color: rgba(255, 107, 107, 0.15);
+            color: #ff8787 !important;
+        }
+
+        h2.mb-4 {
+            color: var(--green);
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        h2.mb-4::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 60px;
+            height: 4px;
+            background-color: var(--butter);
+            border-radius: 2px;
+        }
+
+        .card {
+            border: none !important;
+            border-radius: 14px !important;
+            overflow: hidden;
+        }
+
+        .card-title {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        .card-body h4 {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        .form-label {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .form-control {
+            border-radius: 8px;
+        }
+
+        .form-control:focus {
+            border-color: var(--green);
+            box-shadow: 0 0 0 0.2rem rgba(1, 62, 55, 0.15);
+        }
+
+        .btn-primary {
+            background-color: var(--green) !important;
+            border-color: var(--green) !important;
+            border-radius: 8px !important;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--green-dark) !important;
+            border-color: var(--green-dark) !important;
+        }
+
+        .btn-danger {
+            border-radius: 8px !important;
+            font-weight: 600;
+        }
+
+        .btn-sm {
+            border-radius: 6px !important;
+        }
+
+        .alert-info {
+            background-color: var(--butter);
+            border: none;
+            border-radius: 10px;
+            color: var(--text-dark);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--green);
+            border-radius: 4px;
+        }
+    </style>
 </head>
 <body class="bg-light">
 

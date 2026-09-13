@@ -21,16 +21,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $admin = mysqli_fetch_assoc($result);
 
             if (password_verify($password, $admin["password"])) {
-                // Admin session
                 $_SESSION["admin_id"] = $admin["id"];
                 $_SESSION["admin_username"] = $admin["username"];
                 $_SESSION["admin_role"] = "admin";
 
-                // Remove student session variables
                 unset($_SESSION["student_id"]);
                 unset($_SESSION["student_name"]);
 
-                // Redirect to admin dashboard
                 header("Location: dashboard.php");
                 exit;
             }
@@ -49,6 +46,63 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --butter: #FFEFB3;
+            --green: #013E37;
+            --green-dark: #012a25;
+            --text-dark: #1a1a1a;
+        }
+
+        body.bg-light {
+            background: linear-gradient(135deg, #f4f6f5 0%, var(--butter) 150%);
+            font-family: 'Segoe UI', 'Poppins', sans-serif;
+        }
+
+        .card {
+            border: none !important;
+            border-radius: 18px !important;
+            overflow: hidden;
+        }
+
+        h3.text-center {
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        .form-label {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            padding: 10px 14px;
+        }
+
+        .form-control:focus {
+            border-color: var(--green);
+            box-shadow: 0 0 0 0.2rem rgba(1, 62, 55, 0.15);
+        }
+
+        .btn-primary {
+            background-color: var(--green) !important;
+            border-color: var(--green) !important;
+            border-radius: 10px !important;
+            font-weight: 600;
+            padding: 10px 0;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--green-dark) !important;
+            border-color: var(--green-dark) !important;
+        }
+
+        .alert-danger {
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
