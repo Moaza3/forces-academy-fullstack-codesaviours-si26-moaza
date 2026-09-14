@@ -15,7 +15,6 @@ if (isset($_GET["delete"])) {
     $delete_stmt = mysqli_prepare($conn, $delete_sql);
 
     if ($delete_stmt) {
-
         mysqli_stmt_bind_param($delete_stmt, "i", $student_id);
         mysqli_stmt_execute($delete_stmt);
         mysqli_stmt_close($delete_stmt);
@@ -35,7 +34,7 @@ if ($search !== "") {
 
     $sql = "SELECT id, full_name, email, roll_number, class, created_at
             FROM students
-            WHERE full_name LIKE ? OR roll_number LIKE ?
+            WHERE full_name LIKE ? OR email LIKE ? OR roll_number LIKE ?
             ORDER BY created_at DESC";
 
     $stmt = mysqli_prepare($conn, $sql);
@@ -44,7 +43,8 @@ if ($search !== "") {
 
     mysqli_stmt_bind_param(
         $stmt,
-        "ss",
+        "sss",
+        $search_value,
         $search_value,
         $search_value
     );
@@ -248,7 +248,7 @@ if ($search !== "") {
                     Upload Results
                 </a>
 
-                <a href="notice.php" class="nav-link text-white mb-2">
+                <a href="notices.php" class="nav-link text-white mb-2">
                     Post Notice
                 </a>
 
@@ -270,7 +270,7 @@ if ($search !== "") {
                 Manage Students
             </h2>
 
-            <form method="GET" class="mb-4">
+            <form method="GET" action="students.php" class="mb-4">
 
                 <div class="input-group">
 
@@ -278,7 +278,7 @@ if ($search !== "") {
                         type="text"
                         name="search"
                         class="form-control"
-                        placeholder="Search by name or roll number"
+                        placeholder="Search by name, email or roll number"
                         value="<?php echo htmlspecialchars($search); ?>"
                     >
 
