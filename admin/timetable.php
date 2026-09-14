@@ -614,7 +614,6 @@ $result = mysqli_stmt_get_result($fetch_stmt);
             <?php else: ?>
                 <div class="empty-state">
                     <div class="empty-icon">
-                        📅
                     </div>
                     <h3>No Timetable Entries Found</h3>
                     <p>Add your first timetable entry using the form above.</p>
