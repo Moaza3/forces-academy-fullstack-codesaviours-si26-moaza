@@ -1,64 +1,31 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 session_start();
+require_once "../config/db.php";
 
-if (file_exists("../config/db.php")) {
-    require_once "../config/db.php";
-} else {
-    die("Error: Database configuration file standard path par nahi mili.");
-}
-
-if (!isset($_SESSION["admin_id"]) || ($_SESSION["admin_role"] ?? '') !== "admin") {
+if (!isset($_SESSION["admin_id"]) || $_SESSION["admin_role"] !== "admin") {
     header("Location: login.php");
     exit;
 }
 
-$total_students = 0;
-try {
-    $res = mysqli_query($conn, "SELECT COUNT(*) AS total FROM students");
-    if ($res) {
-        $row = mysqli_fetch_assoc($res);
-        $total_students = $row['total'] ?? 0;
-    }
-} catch (Throwable $e) {
-    $total_students = 0;
-}
+$student_query = "SELECT COUNT(*) AS total_students FROM students";
+$student_result = mysqli_query($conn, $student_query);
+$student_data = mysqli_fetch_assoc($student_result);
+$total_students = $student_data["total_students"];
 
-$total_courses = 0;
-try {
-    $res = mysqli_query($conn, "SELECT COUNT(*) AS total FROM courses");
-    if ($res) {
-        $row = mysqli_fetch_assoc($res);
-        $total_courses = $row['total'] ?? 0;
-    }
-} catch (Throwable $e) {
-    $total_courses = 0;
-}
+$course_query = "SELECT COUNT(*) AS total_courses FROM courses";
+$course_result = mysqli_query($conn, $course_query);
+$course_data = mysqli_fetch_assoc($course_result);
+$total_courses = $course_data["total_courses"];
 
-$total_assignments = 0;
-try {
-    $res = mysqli_query($conn, "SELECT COUNT(*) AS total FROM assignments");
-    if ($res) {
-        $row = mysqli_fetch_assoc($res);
-        $total_assignments = $row['total'] ?? 0;
-    }
-} catch (Throwable $e) {
-    $total_assignments = 0;
-}
+$assignment_query = "SELECT COUNT(*) AS total_assignments FROM assignment";
+$assignment_result = mysqli_query($conn, $assignment_query);
+$assignment_data = mysqli_fetch_assoc($assignment_result);
+$total_assignments = $assignment_data["total_assignments"];
 
-$total_notices = 0;
-try {
-    $res = mysqli_query($conn, "SELECT COUNT(*) AS total FROM notices");
-    if ($res) {
-        $row = mysqli_fetch_assoc($res);
-        $total_notices = $row['total'] ?? 0;
-    }
-} catch (Throwable $e) {
-    $total_notices = 0;
-}
+$notice_query = "SELECT COUNT(*) AS total_notices FROM notices";
+$notice_result = mysqli_query($conn, $notice_query);
+$notice_data = mysqli_fetch_assoc($notice_result);
+$total_notices = $notice_data["total_notices"];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -67,6 +34,7 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
         :root {
             --butter: #FFEFB3;
@@ -96,10 +64,10 @@ try {
             border-radius: 8px;
             padding: 10px 14px;
             transition: all 0.25s ease;
-            font-weight: 400;
+            font-weight: 500;
         }
 
-        .bg-dark .nav-link:hover, .bg-dark .nav-link.active {
+        .bg-dark .nav-link:hover {
             background-color: rgba(255, 239, 179, 0.15);
             color: var(--butter) !important;
             padding-left: 20px;
@@ -169,10 +137,10 @@ try {
             font-size: 2.4rem;
         }
 
-        .row.g-4 > div:nth-child(1) .card { border-top-color: var(--green) !important; }
-        .row.g-4 > div:nth-child(2) .card { border-top-color: #FFD75E !important; }
-        .row.g-4 > div:nth-child(3) .card { border-top-color: var(--green) !important; }
-        .row.g-4 > div:nth-child(4) .card { border-top-color: #FFD75E !important; }
+        .row.g-4 > div:nth-child(1) .card { border-top-color: var(--green); }
+        .row.g-4 > div:nth-child(2) .card { border-top-color: #FFD75E; }
+        .row.g-4 > div:nth-child(3) .card { border-top-color: var(--green); }
+        .row.g-4 > div:nth-child(4) .card { border-top-color: #FFD75E; }
 
         .row.g-4 > div:nth-child(2) .card-body h2,
         .row.g-4 > div:nth-child(4) .card-body h2 {
@@ -182,7 +150,6 @@ try {
         ::-webkit-scrollbar {
             width: 8px;
         }
-
         ::-webkit-scrollbar-thumb {
             background: var(--green);
             border-radius: 4px;
@@ -191,28 +158,16 @@ try {
 </head>
 <body class="bg-light">
 
-    <nav class="navbar navbar-dark bg-dark d-md-none p-3">
-        <div class="container-fluid">
-            <span class="navbar-brand fw-bold" style="color: var(--butter);">Admin Panel</span>
-            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#adminSidebar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-    </nav>
-
     <div class="container-fluid">
         <div class="row">
 
-            <div id="adminSidebar" class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3 collapse d-md-block">
-                <h4 class="text-center mb-4 d-none d-md-block">Admin Panel</h4>
+            <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3">
+                <h4 class="text-center mb-4">Admin Panel</h4>
 
                 <div class="nav flex-column">
-                    <a href="dashboard.php" class="nav-link text-white mb-2 active">Dashboard</a>
                     <a href="students.php" class="nav-link text-white mb-2">Manage Students</a>
                     <a href="courses.php" class="nav-link text-white mb-2">Manage Courses</a>
                     <a href="assignments.php" class="nav-link text-white mb-2">Manage Assignments</a>
-                    <a href="fees.php" class="nav-link text-white mb-2">Manage Fees</a>
-                    <a href="timetable.php" class="nav-link text-white mb-2">Timetable</a>
                     <a href="results.php" class="nav-link text-white mb-2">Upload Results</a>
                     <a href="notices.php" class="nav-link text-white mb-2">Post Notice</a>
                     <a href="logout.php" class="nav-link text-danger">Logout</a>
@@ -223,7 +178,7 @@ try {
                 <h2 class="mb-4">Admin Dashboard</h2>
 
                 <p class="mb-4">
-                    Welcome, <strong><?php echo htmlspecialchars($_SESSION["admin_username"] ?? "Admin"); ?></strong>!
+                    Welcome, <?php echo htmlspecialchars($_SESSION["admin_username"]); ?>!
                 </p>
 
                 <div class="row g-4">
@@ -232,7 +187,7 @@ try {
                         <div class="card shadow-sm">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Total Students</h5>
-                                <h2 class="mt-3"><?php echo (int)$total_students; ?></h2>
+                                <h2 class="mt-3"><?php echo $total_students; ?></h2>
                             </div>
                         </div>
                     </div>
@@ -241,7 +196,7 @@ try {
                         <div class="card shadow-sm">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Total Courses</h5>
-                                <h2 class="mt-3"><?php echo (int)$total_courses; ?></h2>
+                                <h2 class="mt-3"><?php echo $total_courses; ?></h2>
                             </div>
                         </div>
                     </div>
@@ -250,7 +205,7 @@ try {
                         <div class="card shadow-sm">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Total Assignments</h5>
-                                <h2 class="mt-3"><?php echo (int)$total_assignments; ?></h2>
+                                <h2 class="mt-3"><?php echo $total_assignments; ?></h2>
                             </div>
                         </div>
                     </div>
@@ -259,7 +214,7 @@ try {
                         <div class="card shadow-sm">
                             <div class="card-body text-center">
                                 <h5 class="card-title">Total Notices</h5>
-                                <h2 class="mt-3"><?php echo (int)$total_notices; ?></h2>
+                                <h2 class="mt-3"><?php echo $total_notices; ?></h2>
                             </div>
                         </div>
                     </div>
@@ -270,6 +225,5 @@ try {
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

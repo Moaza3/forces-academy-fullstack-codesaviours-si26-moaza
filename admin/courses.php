@@ -10,17 +10,15 @@ if (!isset($_SESSION["admin_id"]) || $_SESSION["admin_role"] !== "admin") {
 $error = "";
 $success = "";
 
-// Handle Form Submission (Add or Edit Course)
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $course_name = trim($_POST["course_name"] ?? '');
-    $description = trim($_POST["description"] ?? '');
-    $teacher_name = trim($_POST["teacher_name"] ?? '');
+    $course_name = trim($_POST["course_name"]);
+    $description = trim($_POST["description"]);
+    $teacher_name = trim($_POST["teacher_name"]);
 
     if (empty($course_name) || empty($description) || empty($teacher_name)) {
         $error = "All fields are required.";
     } else {
         if (isset($_POST["course_id"]) && $_POST["course_id"] !== "") {
-            // Update Course
             $course_id = (int) $_POST["course_id"];
 
             $sql = "UPDATE courses
@@ -28,84 +26,86 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     WHERE id = ?";
 
             $stmt = mysqli_prepare($conn, $sql);
-            if ($stmt) {
-                mysqli_stmt_bind_param($stmt, "sssi", $course_name, $description, $teacher_name, $course_id);
+            mysqli_stmt_bind_param($stmt, "sssi", $course_name, $description, $teacher_name, $course_id);
 
-                if (mysqli_stmt_execute($stmt)) {
-                    mysqli_stmt_close($stmt);
-                    header("Location: courses.php?updated=1");
-                    exit;
-                } else {
-                    $error = "Course update failed.";
-                }
+            if (mysqli_stmt_execute($stmt)) {
                 mysqli_stmt_close($stmt);
+                header("Location: courses.php?updated=1");
+                exit;
+            } else {
+                $error = "Course update failed.";
             }
+
+            mysqli_stmt_close($stmt);
         } else {
-            // Add New Course
-            $sql = "INSERT INTO courses (course_name, description, teacher_name) VALUES (?, ?, ?)";
+            $sql = "INSERT INTO courses
+                    (course_name, description, teacher_name)
+                    VALUES (?, ?, ?)";
 
             $stmt = mysqli_prepare($conn, $sql);
-            if ($stmt) {
-                mysqli_stmt_bind_param($stmt, "sss", $course_name, $description, $teacher_name);
+            mysqli_stmt_bind_param($stmt, "sss", $course_name, $description, $teacher_name);
 
-                if (mysqli_stmt_execute($stmt)) {
-                    mysqli_stmt_close($stmt);
-                    header("Location: courses.php?added=1");
-                    exit;
-                } else {
-                    $error = "Course could not be added.";
-                }
+            if (mysqli_stmt_execute($stmt)) {
                 mysqli_stmt_close($stmt);
+                header("Location: courses.php?added=1");
+                exit;
+            } else {
+                $error = "Course could not be added.";
             }
+
+            mysqli_stmt_close($stmt);
         }
     }
 }
 
-// Handle Delete Request
 if (isset($_GET["delete"])) {
     $course_id = (int) $_GET["delete"];
 
     $sql = "DELETE FROM courses WHERE id = ?";
     $stmt = mysqli_prepare($conn, $sql);
-    if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "i", $course_id);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-    }
+    mysqli_stmt_bind_param($stmt, "i", $course_id);
+    mysqli_stmt_execute($stmt);
+    mysqli_stmt_close($stmt);
 
     header("Location: courses.php?deleted=1");
     exit;
 }
 
-// Fetch Course Data for Editing
 $edit_course = null;
+
 if (isset($_GET["edit"])) {
     $course_id = (int) $_GET["edit"];
 
-    $sql = "SELECT id, course_name, description, teacher_name FROM courses WHERE id = ?";
+    $sql = "SELECT id, course_name, description, teacher_name
+            FROM courses
+            WHERE id = ?";
+
     $stmt = mysqli_prepare($conn, $sql);
-    if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "i", $course_id);
-        mysqli_stmt_execute($stmt);
-        $result_edit = mysqli_stmt_get_result($stmt);
-        $edit_course = mysqli_fetch_assoc($result_edit);
-        mysqli_stmt_close($stmt);
-    }
+    mysqli_stmt_bind_param($stmt, "i", $course_id);
+    mysqli_stmt_execute($stmt);
+
+    $result_edit = mysqli_stmt_get_result($stmt);
+    $edit_course = mysqli_fetch_assoc($result_edit);
+
+    mysqli_stmt_close($stmt);
 }
 
-// Flash Messages
 if (isset($_GET["added"])) {
     $success = "Course added successfully.";
 }
+
 if (isset($_GET["updated"])) {
     $success = "Course updated successfully.";
 }
+
 if (isset($_GET["deleted"])) {
     $success = "Course deleted successfully.";
 }
 
-// Fetch All Courses
-$sql = "SELECT id, course_name, description, teacher_name, created_at FROM courses ORDER BY created_at DESC";
+$sql = "SELECT id, course_name, description, teacher_name, created_at
+        FROM courses
+        ORDER BY created_at DESC";
+
 $result = mysqli_query($conn, $sql);
 ?>
 <!DOCTYPE html>
@@ -114,10 +114,7 @@ $result = mysqli_query($conn, $sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Courses</title>
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <style>
         :root {
@@ -148,10 +145,10 @@ $result = mysqli_query($conn, $sql);
             border-radius: 8px;
             padding: 10px 14px;
             transition: all 0.25s ease;
-            font-weight: 400;
+            font-weight: 500;
         }
 
-        .bg-dark .nav-link:hover, .bg-dark .nav-link.active {
+        .bg-dark .nav-link:hover {
             background-color: rgba(255, 239, 179, 0.15);
             color: var(--butter) !important;
             padding-left: 20px;
@@ -212,19 +209,35 @@ $result = mysqli_query($conn, $sql);
             box-shadow: 0 0 0 0.2rem rgba(1, 62, 55, 0.15);
         }
 
-        .btn-primary, .btn-success {
+        .btn-primary {
             background-color: var(--green) !important;
             border-color: var(--green) !important;
             border-radius: 8px !important;
             font-weight: 600;
         }
 
-        .btn-primary:hover, .btn-success:hover {
+        .btn-primary:hover {
             background-color: var(--green-dark) !important;
             border-color: var(--green-dark) !important;
         }
 
-        .btn-secondary, .btn-danger {
+        .btn-success {
+            background-color: var(--green) !important;
+            border-color: var(--green) !important;
+            border-radius: 8px !important;
+            font-weight: 600;
+        }
+
+        .btn-success:hover {
+            background-color: var(--green-dark) !important;
+            border-color: var(--green-dark) !important;
+        }
+
+        .btn-secondary {
+            border-radius: 8px !important;
+        }
+
+        .btn-danger {
             border-radius: 8px !important;
             font-weight: 600;
         }
@@ -269,36 +282,23 @@ $result = mysqli_query($conn, $sql);
 </head>
 <body class="bg-light">
 
-    <!-- Mobile Top Navigation Bar -->
-    <nav class="navbar navbar-dark bg-dark d-md-none p-3 shadow-sm">
-        <div class="container-fluid">
-            <span class="navbar-brand fw-bold" style="color: var(--butter);">Admin Panel</span>
-            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#adminSidebar" aria-controls="adminSidebar" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-    </nav>
-
     <div class="container-fluid">
         <div class="row">
 
-            <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3 collapse d-md-block" id="adminSidebar">
-                <h4 class="text-center mb-4 d-none d-md-block">Admin Panel</h4>
+            <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3">
+                <h4 class="text-center mb-4">Admin Panel</h4>
 
                 <div class="nav flex-column">
-                    <a href="dashboard.php" class="nav-link text-white mb-2"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
-                    <a href="students.php" class="nav-link text-white mb-2"><i class="bi bi-people me-2"></i>Manage Students</a>
-                    <a href="courses.php" class="nav-link text-white mb-2 active"><i class="bi bi-book me-2"></i>Manage Courses</a>
-                    <a href="assignments.php" class="nav-link text-white mb-2"><i class="bi bi-journal-text me-2"></i>Manage Assignments</a>
-                    <a href="fees.php" class="nav-link text-white mb-2"><i class="bi bi-cash-stack me-2"></i>Manage Fees</a>
-                    <a href="results.php" class="nav-link text-white mb-2"><i class="bi bi-award me-2"></i>Upload Results</a>
-                    <a href="notices.php" class="nav-link text-white mb-2"><i class="bi bi-megaphone me-2"></i>Post Notice</a>
-                    <a href="logout.php" class="nav-link text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+                    <a href="dashboard.php" class="nav-link text-white mb-2">Dashboard</a>
+                    <a href="students.php" class="nav-link text-white mb-2">Manage Students</a>
+                    <a href="courses.php" class="nav-link text-white mb-2">Manage Courses</a>
+                    <a href="assignments.php" class="nav-link text-white mb-2">Manage Assignments</a>
+                    <a href="results.php" class="nav-link text-white mb-2">Upload Results</a>
+                    <a href="notice.php" class="nav-link text-white mb-2">Post Notice</a>
+                    <a href="logout.php" class="nav-link text-danger">Logout</a>
                 </div>
             </div>
 
-            <!-- Main Content -->
             <div class="col-md-9 col-lg-10 p-4">
                 <h2 class="mb-4">Manage Courses</h2>
 
@@ -314,14 +314,17 @@ $result = mysqli_query($conn, $sql);
                     </div>
                 <?php endif; ?>
 
-                <!-- Form Card -->
-                <div class="card shadow-sm mb-4 border-top border-4 border-success">
-                    <div class="card-body p-4">
-                        <h4 class="mb-3"><?php echo $edit_course ? "Edit Course" : "Add New Course"; ?></h4>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <?php if ($edit_course): ?>
+                            <h4 class="mb-3">Edit Course</h4>
+                        <?php else: ?>
+                            <h4 class="mb-3">Add New Course</h4>
+                        <?php endif; ?>
 
-                        <form method="POST" action="courses.php">
+                        <form method="POST">
                             <?php if ($edit_course): ?>
-                                <input type="hidden" name="course_id" value="<?php echo (int)$edit_course["id"]; ?>">
+                                <input type="hidden" name="course_id" value="<?php echo $edit_course["id"]; ?>">
                             <?php endif; ?>
 
                             <div class="mb-3">
@@ -351,59 +354,54 @@ $result = mysqli_query($conn, $sql);
                                 >
                             </div>
 
-                            <div class="d-flex gap-2">
-                                <?php if ($edit_course): ?>
-                                    <button type="submit" class="btn btn-primary px-4 py-2">Update Course</button>
-                                    <a href="courses.php" class="btn btn-secondary px-4 py-2">Cancel</a>
-                                <?php else: ?>
-                                    <button type="submit" class="btn btn-success px-4 py-2">Add Course</button>
-                                <?php endif; ?>
-                            </div>
+                            <?php if ($edit_course): ?>
+                                <button type="submit" class="btn btn-primary">Update Course</button>
+                                <a href="courses.php" class="btn btn-secondary">Cancel</a>
+                            <?php else: ?>
+                                <button type="submit" class="btn btn-success">Add Course</button>
+                            <?php endif; ?>
                         </form>
                     </div>
                 </div>
 
-                <!-- Table Card -->
-                <div class="card shadow-sm border-top border-4 border-warning">
-                    <div class="card-body p-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
                         <h4 class="mb-3">All Courses</h4>
 
                         <div class="table-responsive">
-                            <table class="table table-bordered table-hover align-middle mb-0">
+                            <table class="table table-bordered table-hover">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th class="py-3 px-3">Course Name</th>
-                                        <th class="py-3 px-3">Description</th>
-                                        <th class="py-3 px-3">Teacher Name</th>
-                                        <th class="py-3 px-3">Created Date</th>
-                                        <th class="py-3 px-3">Actions</th>
+                                        <th>Course Name</th>
+                                        <th>Description</th>
+                                        <th>Teacher Name</th>
+                                        <th>Created Date</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php if ($result && mysqli_num_rows($result) > 0): ?>
+                                    <?php if (mysqli_num_rows($result) > 0): ?>
                                         <?php while ($course = mysqli_fetch_assoc($result)): ?>
                                             <tr>
-                                                <td class="px-3 fw-medium"><?php echo htmlspecialchars($course["course_name"]); ?></td>
-                                                <td class="px-3 text-muted"><?php echo htmlspecialchars($course["description"]); ?></td>
-                                                <td class="px-3"><?php echo htmlspecialchars($course["teacher_name"]); ?></td>
-                                                <td class="px-3 text-nowrap"><?php echo htmlspecialchars($course["created_at"]); ?></td>
-                                                <td class="px-3 text-nowrap">
-                                                    <a href="courses.php?edit=<?php echo (int)$course["id"]; ?>" class="btn btn-sm btn-outline-success me-1">
-                                                        <i class="bi bi-pencil-square"></i> Edit
-                                                    </a>
+                                                <td><?php echo htmlspecialchars($course["course_name"]); ?></td>
+                                                <td><?php echo htmlspecialchars($course["description"]); ?></td>
+                                                <td><?php echo htmlspecialchars($course["teacher_name"]); ?></td>
+                                                <td><?php echo htmlspecialchars($course["created_at"]); ?></td>
+                                                <td>
+                                                    <a href="courses.php?edit=<?php echo $course["id"]; ?>" class="btn btn-sm btn-primary">Edit</a>
                                                     <a
-                                                        href="courses.php?delete=<?php echo (int)$course["id"]; ?>"
-                                                        class="btn btn-sm btn-outline-danger"
+                                                        href="courses.php?delete=<?php echo $course["id"]; ?>"
+                                                        class="btn btn-sm btn-danger"
                                                         onclick="return confirm('Are you sure you want to delete this course?');"
                                                     >
-                                                        <i class="bi bi-trash"></i> Delete
+                                                        Delete
                                                     </a>
                                                 </td>
                                             </tr>
                                         <?php endwhile; ?>
                                     <?php else: ?>
                                         <tr>
-                                            <td colspan="5" class="text-center py-4 text-muted">No courses found.</td>
+                                            <td colspan="5" class="text-center">No courses found.</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
@@ -411,13 +409,10 @@ $result = mysqli_query($conn, $sql);
                         </div>
                     </div>
                 </div>
-
             </div>
 
         </div>
     </div>
 
-    <!-- Bootstrap 5 JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

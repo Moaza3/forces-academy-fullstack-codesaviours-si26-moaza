@@ -1,72 +1,60 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 session_start();
+require_once "../config/db.php";
 
-if (file_exists("../config/db.php")) {
-    require_once "../config/db.php";
-} else {
-    die("Error: Database configuration file standard path par nahi mili.");
-}
-
-if (!isset($_SESSION["admin_id"]) || ($_SESSION["admin_role"] ?? '') !== "admin") {
+if (!isset($_SESSION["admin_id"]) || $_SESSION["admin_role"] !== "admin") {
     header("Location: login.php");
     exit;
 }
 
-$success = "";
-
-// Handle student deletion
 if (isset($_GET["delete"])) {
+
     $student_id = (int) $_GET["delete"];
 
     $delete_sql = "DELETE FROM students WHERE id = ?";
     $delete_stmt = mysqli_prepare($conn, $delete_sql);
 
     if ($delete_stmt) {
+
         mysqli_stmt_bind_param($delete_stmt, "i", $student_id);
         mysqli_stmt_execute($delete_stmt);
         mysqli_stmt_close($delete_stmt);
     }
 
-    header("Location: students.php?deleted=1");
+    header("Location: students.php");
     exit;
 }
 
-if (isset($_GET["deleted"])) {
-    $success = "Student record deleted successfully.";
-}
-
-// Handle search functionality
 $search = "";
+
 if (isset($_GET["search"])) {
     $search = trim($_GET["search"]);
 }
 
 if ($search !== "") {
+
     $sql = "SELECT id, full_name, email, roll_number, class, created_at
             FROM students
-            WHERE full_name LIKE ? OR roll_number LIKE ? OR class LIKE ?
+            WHERE full_name LIKE ? OR roll_number LIKE ?
             ORDER BY created_at DESC";
 
     $stmt = mysqli_prepare($conn, $sql);
+
     $search_value = "%" . $search . "%";
 
-    if ($stmt) {
-        mysqli_stmt_bind_param(
-            $stmt,
-            "sss",
-            $search_value,
-            $search_value,
-            $search_value
-        );
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-        mysqli_stmt_close($stmt);
-    }
+    mysqli_stmt_bind_param(
+        $stmt,
+        "ss",
+        $search_value,
+        $search_value
+    );
+
+    mysqli_stmt_execute($stmt);
+
+    $result = mysqli_stmt_get_result($stmt);
+
 } else {
+
     $sql = "SELECT id, full_name, email, roll_number, class, created_at
             FROM students
             ORDER BY created_at DESC";
@@ -114,7 +102,7 @@ if ($search !== "") {
             font-weight: 500;
         }
 
-        .bg-dark .nav-link:hover, .bg-dark .nav-link.active {
+        .bg-dark .nav-link:hover {
             background-color: rgba(255, 239, 179, 0.15);
             color: var(--butter) !important;
             padding-left: 20px;
@@ -228,131 +216,194 @@ if ($search !== "") {
 </head>
 <body class="bg-light">
 
-    <!-- Mobile Top Navbar with 3-Lines Toggler -->
-    <nav class="navbar navbar-dark bg-dark d-md-none p-3">
-        <div class="container-fluid">
-            <span class="navbar-brand fw-bold" style="color: var(--butter);">Admin Panel</span>
-            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#adminSidebar">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-        </div>
-    </nav>
-
 <div class="container-fluid">
+
     <div class="row">
 
-        <!-- Sidebar -->
-        <div id="adminSidebar" class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3 collapse d-md-block">
-            <h4 class="text-center mb-4 d-none d-md-block">Admin Panel</h4>
+        <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3">
+
+            <h4 class="text-center mb-4">
+                Admin Panel
+            </h4>
 
             <div class="nav flex-column">
-                <a href="dashboard.php" class="nav-link text-white mb-2">Dashboard</a>
-                <a href="students.php" class="nav-link text-white mb-2 active">Manage Students</a>
-                <a href="courses.php" class="nav-link text-white mb-2">Manage Courses</a>
-                <a href="assignments.php" class="nav-link text-white mb-2">Manage Assignments</a>
-                <a href="fees.php" class="nav-link text-white mb-2">Manage Fees</a>
-                <a href="timetable.php" class="nav-link text-white mb-2">Timetable</a>
-                <a href="results.php" class="nav-link text-white mb-2">Upload Results</a>
-                <a href="notices.php" class="nav-link text-white mb-2">Post Notice</a>
-                <a href="logout.php" class="nav-link text-danger">Logout</a>
+
+                <a href="dashboard.php" class="nav-link text-white mb-2">
+                    Dashboard
+                </a>
+
+                <a href="students.php" class="nav-link text-white mb-2">
+                    Manage Students
+                </a>
+
+                <a href="courses.php" class="nav-link text-white mb-2">
+                    Manage Courses
+                </a>
+
+                <a href="assignments.php" class="nav-link text-white mb-2">
+                    Manage Assignments
+                </a>
+
+                <a href="results.php" class="nav-link text-white mb-2">
+                    Upload Results
+                </a>
+
+                <a href="notice.php" class="nav-link text-white mb-2">
+                    Post Notice
+                </a>
+
+                <a href="logout.php" class="nav-link text-danger">
+                    Logout
+                </a>
+
             </div>
+
         </div>
 
         <div class="col-md-9 col-lg-10 p-4">
-            <h2 class="mb-4">Manage Students</h2>
 
-            <?php if ($success !== ""): ?>
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <?php echo htmlspecialchars($success); ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            <?php endif; ?>
+            <h2 class="mb-4">
+                Manage Students
+            </h2>
 
             <form method="GET" class="mb-4">
+
                 <div class="input-group">
+
                     <input
                         type="text"
                         name="search"
                         class="form-control"
-                        placeholder="Search by name, roll number, or class"
+                        placeholder="Search by name or roll number"
                         value="<?php echo htmlspecialchars($search); ?>"
                     >
-                    <button type="submit" class="btn btn-primary">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
                         Search
                     </button>
 
                     <?php if ($search !== ""): ?>
-                        <a href="students.php" class="btn btn-secondary">
+
+                        <a
+                            href="students.php"
+                            class="btn btn-secondary"
+                        >
                             Clear
                         </a>
+
                     <?php endif; ?>
+
                 </div>
+
             </form>
 
             <div class="card shadow-sm">
+
                 <div class="card-body">
+
                     <div class="table-responsive">
-                        <table class="table table-bordered table-hover align-middle">
+
+                        <table class="table table-bordered table-hover">
+
                             <thead class="table-dark">
+
                                 <tr>
+
                                     <th>Name</th>
                                     <th>Email</th>
                                     <th>Roll Number</th>
                                     <th>Class</th>
                                     <th>Registered Date</th>
                                     <th>Actions</th>
+
                                 </tr>
+
                             </thead>
+
                             <tbody>
-                            <?php if ($result && mysqli_num_rows($result) > 0): ?>
+
+                            <?php if (mysqli_num_rows($result) > 0): ?>
+
                                 <?php while ($student = mysqli_fetch_assoc($result)): ?>
+
                                     <tr>
-                                        <td><?php echo htmlspecialchars($student["full_name"] ?? ''); ?></td>
-                                        <td><?php echo htmlspecialchars($student["email"] ?? ''); ?></td>
-                                        <td><?php echo htmlspecialchars($student["roll_number"] ?? ''); ?></td>
-                                        <td><?php echo htmlspecialchars($student["class"] ?? ''); ?></td>
+
                                         <td>
-                                            <?php
-                                                $regDate = !empty($student["created_at"])
-                                                    ? date("d M Y, h:i A", strtotime($student["created_at"]))
-                                                    : 'N/A';
-                                                echo htmlspecialchars($regDate);
-                                            ?>
+                                            <?php echo htmlspecialchars($student["full_name"]); ?>
                                         </td>
+
                                         <td>
+                                            <?php echo htmlspecialchars($student["email"]); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo htmlspecialchars($student["roll_number"]); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo htmlspecialchars($student["class"]); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo htmlspecialchars($student["created_at"]); ?>
+                                        </td>
+
+                                        <td>
+
                                             <a
                                                 href="student-details.php?id=<?php echo $student["id"]; ?>"
-                                                class="btn btn-sm btn-info text-white me-1"
+                                                class="btn btn-sm btn-info text-white"
                                             >
                                                 View
                                             </a>
+
                                             <a
                                                 href="students.php?delete=<?php echo $student["id"]; ?>"
                                                 class="btn btn-sm btn-danger"
-                                                onclick="return confirm('Are you sure you want to delete this student profile?');"
+                                                onclick="return confirm('Are you sure you want to delete this student?');"
                                             >
                                                 Delete
                                             </a>
+
                                         </td>
+
                                     </tr>
+
                                 <?php endwhile; ?>
+
                             <?php else: ?>
+
                                 <tr>
-                                    <td colspan="6" class="text-center py-4 text-muted">
-                                        No student records found.
+
+                                    <td
+                                        colspan="6"
+                                        class="text-center"
+                                    >
+                                        No students found.
                                     </td>
+
                                 </tr>
+
                             <?php endif; ?>
+
                             </tbody>
+
                         </table>
+
                     </div>
+
                 </div>
+
             </div>
 
         </div>
+
     </div>
+
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
