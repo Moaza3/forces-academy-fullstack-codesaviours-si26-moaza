@@ -20,7 +20,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if (mysqli_num_rows($result) === 1) {
             $admin = mysqli_fetch_assoc($result);
 
-            if (password_verify($password, $admin["password"])) {
+            $stored_password = $admin["password"];
+            $login_success = false;
+
+            // 1. Agar password already hashed hai to standard password_verify check karo
+            if (password_verify($password, $stored_password)) {
+                $login_success = true;
+            } 
+            // 2. Fallback: Agar database me purana password plain text me para ho toh match kar ke foran hash me update kar do
+            elseif ($password === $stored_password) {
+                $login_success = true;
+                $new_hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                $update_sql = "UPDATE admins SET password = ? WHERE id = ?";
+                $update_stmt = mysqli_prepare($conn, $update_sql);
+                if ($update_stmt) {
+                    mysqli_stmt_bind_param($update_stmt, "si", $new_hashed_password, $admin["id"]);
+                    mysqli_stmt_execute($update_stmt);
+                    mysqli_stmt_close($update_stmt);
+                }
+            }
+
+            if ($login_success) {
                 $_SESSION["admin_id"] = $admin["id"];
                 $_SESSION["admin_username"] = $admin["username"];
                 $_SESSION["admin_role"] = "admin";
