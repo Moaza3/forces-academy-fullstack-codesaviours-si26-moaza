@@ -344,6 +344,9 @@ if (!$result) {
             <li class="nav-item mb-2">
                 <a href="notices.php" class="nav-link text-white fw-normal">Notices</a>
             </li>
+            <li class="nav-item mb-2">
+                <a href="fees.php" class="nav-link text-white fw-normal">My Fees</a>
+           </li>
             <li class="nav-item mt-3">
                 <a href="logout.php" class="nav-link text-danger fw-normal">Logout</a>
             </li>
