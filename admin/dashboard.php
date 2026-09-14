@@ -165,11 +165,13 @@ $total_notices = $notice_data["total_notices"];
                 <h4 class="text-center mb-4">Admin Panel</h4>
 
                 <div class="nav flex-column">
+                    <a href="dashboard.php" class="nav-link text-white mb-2">Dashboard</a>
                     <a href="students.php" class="nav-link text-white mb-2">Manage Students</a>
                     <a href="courses.php" class="nav-link text-white mb-2">Manage Courses</a>
                     <a href="assignments.php" class="nav-link text-white mb-2">Manage Assignments</a>
                     <a href="results.php" class="nav-link text-white mb-2">Upload Results</a>
                     <a href="notices.php" class="nav-link text-white mb-2">Post Notice</a>
+                    <a href="fees.php" class="nav-link text-white mb-2">Manage Fees</a>
                     <a href="logout.php" class="nav-link text-danger">Logout</a>
                 </div>
             </div>

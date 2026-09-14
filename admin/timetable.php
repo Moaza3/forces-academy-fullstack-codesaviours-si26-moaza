@@ -409,7 +409,7 @@ $result = mysqli_query(
 
     <div class="page-heading">
 
-        <h1>📅 Timetable Management</h1>
+        <h1>Timetable Management</h1>
 
         <p>
             Add, view and manage class timetable entries easily.

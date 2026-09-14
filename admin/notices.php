@@ -218,6 +218,7 @@ $result = mysqli_query($conn, $sql);
                     <a href="assignments.php" class="nav-link text-white mb-2">Manage Assignments</a>
                     <a href="results.php" class="nav-link text-white mb-2">Upload Results</a>
                     <a href="notices.php" class="nav-link text-white mb-2">Post Notice</a>
+                    <a href="fees.php" class="nav-link text-white mb-2">Manage Fees</a>
                     <a href="logout.php" class="nav-link text-danger">Logout</a>
                 </div>
             </div>

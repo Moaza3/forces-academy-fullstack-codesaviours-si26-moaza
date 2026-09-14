@@ -205,6 +205,9 @@ $result = mysqli_stmt_get_result($stmt);
             <li class="nav-item mb-2">
                 <a href="notices.php" class="nav-link text-white">Notices</a>
             </li>
+            <li>
+                <a href="fees.php" class="nav-link text-white mb-2">Manage Fees</a>
+            </li>
             <li class="nav-item mt-3">
                 <a href="logout.php" class="nav-link text-danger">Logout</a>
             </li>
