@@ -276,7 +276,10 @@ if (!$results) {
                 <a href="notices.php" class="nav-link text-white mb-2">
                     Post Notice
                 </a>
-
+                <a href="fees.php" class="nav-link text-white mb-2">
+                    Manage Fees
+                </a>
+                
                 <a href="logout.php" class="nav-link text-danger">
                     Logout
                 </a>
