@@ -1,46 +1,90 @@
+```php
 <?php
 require_once 'config/db.php';
 session_start();
 
+$error = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = trim($_POST['email']);
-    $password = $_POST['password'];
 
-    $sql = "SELECT id, full_name, password FROM students WHERE email = ?";
-    $stmt = mysqli_prepare($conn, $sql);
-    mysqli_stmt_bind_param($stmt, 's', $email);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    $student = mysqli_fetch_assoc($result);
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
 
-    if ($student && password_verify($password, $student['password'])) {
-        $_SESSION['student_id'] = $student['id'];
-        $_SESSION['student_name'] = $student['full_name'];
-        header("Location: dashboard.php");
-        exit;
+    if (empty($email) || empty($password)) {
+        $error = "Email and password are required.";
     } else {
-        $error = "Invalid email or password.";
+
+        $sql = "SELECT id, full_name, password FROM students WHERE email = ?";
+
+        $stmt = mysqli_prepare($conn, $sql);
+
+        if (!$stmt) {
+            $error = "Database query error: " . mysqli_error($conn);
+        } else {
+
+            mysqli_stmt_bind_param($stmt, 's', $email);
+            mysqli_stmt_execute($stmt);
+
+            mysqli_stmt_bind_result(
+                $stmt,
+                $student_id,
+                $student_name,
+                $student_password
+            );
+
+            if (mysqli_stmt_fetch($stmt)) {
+
+                if (password_verify($password, $student_password)) {
+
+                    $_SESSION['student_id'] = $student_id;
+                    $_SESSION['student_name'] = $student_name;
+
+                    mysqli_stmt_close($stmt);
+
+                    header("Location: dashboard.php");
+                    exit;
+
+                } else {
+                    $error = "Invalid email or password.";
+                }
+
+            } else {
+                $error = "Invalid email or password.";
+            }
+
+            mysqli_stmt_close($stmt);
+        }
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Student Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
 
     <style>
         :root {
             --butter: #FFEFB3;
             --green: #013E37;
             --green-dark: #012a25;
-            --text-dark: #1a1a1a;
         }
 
         body.bg-light {
-            background: linear-gradient(135deg, #f4f6f5 0%, var(--butter) 150%);
+            background: linear-gradient(
+                135deg,
+                #f4f6f5 0%,
+                var(--butter) 150%
+            );
+
             font-family: 'Segoe UI', 'Poppins', sans-serif;
             min-height: 100vh;
         }
@@ -52,7 +96,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .card-header {
-            background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%) !important;
+            background: linear-gradient(
+                135deg,
+                var(--green) 0%,
+                var(--green-dark) 100%
+            ) !important;
+
             border-bottom: 4px solid var(--butter);
             padding: 22px 0;
         }
@@ -89,7 +138,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 10px !important;
             font-weight: 600;
             padding: 10px 0;
-            transition: all 0.25s ease;
         }
 
         .btn:hover {
@@ -118,52 +166,94 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
 </head>
+
 <body class="bg-light">
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card shadow">
-                    <div class="card-header text-center text-white">
-                        <h3>Student Login</h3>
-                    </div>
-                    <div class="card-body">
-                        <?php if (isset($error)) { ?>
-                            <div class="alert alert-danger">
-                                <?php echo $error; ?>
-                            </div>
-                        <?php } ?>
-                        <form action="login.php" method="POST">
-                            <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    class="form-control"
-                                    required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Password</label>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    class="form-control"
-                                    required>
-                            </div>
-                            <button
-                                type="submit"
-                                class="btn w-100 text-white">
-                                Login
-                            </button>
-                        </form>
-                        <hr>
-                        <p class="text-center">
-                            Don't have an account?
-                            <a href="register.php">Register Here</a>
-                        </p>
-                    </div>
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-6">
+
+            <div class="card shadow">
+
+                <div class="card-header text-center text-white">
+                    <h3>Student Login</h3>
                 </div>
+
+                <div class="card-body">
+
+                    <?php if (!empty($error)): ?>
+
+                        <div class="alert alert-danger">
+                            <?php echo htmlspecialchars($error); ?>
+                        </div>
+
+                    <?php endif; ?>
+
+                    <form action="login.php" method="POST">
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                name="email"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label class="form-label">
+                                Password
+                            </label>
+
+                            <input
+                                type="password"
+                                name="password"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn w-100 text-white"
+                        >
+                            Login
+                        </button>
+
+                    </form>
+
+                    <hr>
+
+                    <p class="text-center">
+
+                        Don't have an account?
+
+                        <a href="register.php">
+                            Register Here
+                        </a>
+
+                    </p>
+
+                </div>
+
             </div>
+
         </div>
+
     </div>
+
+</div>
+
 </body>
 </html>
+```
