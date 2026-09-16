@@ -1,6 +1,10 @@
 <?php
-
 include("../config/db.php");
+session_start();
+if (!isset($_SESSION["admin_id"])) {
+    header("Location: login.php");
+    exit();
+}
 
 if (isset($_POST['add_assignment'])) {
     $title = mysqli_real_escape_string($conn, $_POST['title']);
@@ -71,6 +75,7 @@ $assignments = mysqli_query($conn, "
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Assignments</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
         :root {
@@ -82,24 +87,35 @@ $assignments = mysqli_query($conn, "
 
         body {
             font-family: 'Segoe UI', 'Poppins', sans-serif;
-            margin: 30px;
             background: #f4f6f5;
+            margin: 0;
+            display: flex;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: auto;
+        /* Sidebar container styling matching other admin pages */
+        .sidebar {
+            width: 250px;
+            background: var(--green);
+            min-height: 100vh;
+            color: white;
+            position: fixed;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            width: calc(100% - 250px);
         }
 
         h1 {
-            text-align: center;
             color: var(--green);
             font-weight: 700;
+            margin-bottom: 25px;
         }
 
         form {
             background: white;
-            padding: 20px;
+            padding: 25px;
             margin-bottom: 30px;
             border-radius: 14px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.06);
@@ -153,6 +169,10 @@ $assignments = mysqli_query($conn, "
             border-radius: 8px;
         }
 
+        .cancel-btn:hover {
+            color: white;
+        }
+
         .table-wrap {
             overflow-x: auto;
         }
@@ -182,7 +202,7 @@ $assignments = mysqli_query($conn, "
             background: rgba(255, 239, 179, 0.2);
         }
 
-        a {
+        table a {
             text-decoration: none;
             margin-right: 10px;
             font-weight: 600;
@@ -196,12 +216,18 @@ $assignments = mysqli_query($conn, "
             color: var(--green);
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
             body {
-                margin: 15px;
+                flex-direction: column;
             }
-
-            form {
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+                position: relative;
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
                 padding: 15px;
             }
         }
@@ -210,7 +236,26 @@ $assignments = mysqli_query($conn, "
 
 <body>
 
-    <div class="container">
+    <!-- Include Sidebar (Agar aapke paas sidebar ki alag file hai jaise sidebar.php toh yeh line kaam karegi, warna agar aapne directly layout likha hai toh niche wala sidebar use hoga) -->
+    <?php 
+    if(file_exists('sidebar.php')) {
+        include('sidebar.php');
+    } else {
+    ?>
+        <div class="sidebar p-3">
+            <h3 class="text-white mb-4">Admin Panel</h3>
+            <ul class="nav flex-column">
+                <li class="nav-item mb-2"><a href="dashboard.php" class="nav-link text-white">Dashboard</a></li>
+                <li class="nav-item mb-2"><a href="students.php" class="nav-link text-white">Manage Students</a></li>
+                <li class="nav-item mb-2"><a href="courses.php" class="nav-link text-white">Manage Courses</a></li>
+                <li class="nav-item mb-2"><a href="assignments.php" class="nav-link text-white active">Manage Assignments</a></li>
+                <li class="nav-item mb-2"><a href="fees.php" class="nav-link text-white">Manage Fees</a></li>
+                <li class="nav-item mt-4"><a href="logout.php" class="nav-link text-danger">Logout</a></li>
+            </ul>
+        </div>
+    <?php } ?>
+
+    <div class="main-content">
 
         <h1>Manage Assignments</h1>
 
