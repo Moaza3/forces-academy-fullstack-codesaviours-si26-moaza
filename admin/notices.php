@@ -139,6 +139,7 @@ $result = mysqli_query($conn, $sql);
             border: none !important;
             border-radius: 14px !important;
             overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
         }
 
         .card-title {
@@ -170,6 +171,7 @@ $result = mysqli_query($conn, $sql);
             border-color: var(--green) !important;
             border-radius: 8px !important;
             font-weight: 600;
+            padding: 10px 20px;
         }
 
         .btn-primary:hover {
@@ -201,6 +203,20 @@ $result = mysqli_query($conn, $sql);
             background: var(--green);
             border-radius: 4px;
         }
+
+        /* Mobile Toggle Responsive Styles */
+        @media (max-width: 768px) {
+            #sidebarMenu {
+                display: none;
+                position: absolute;
+                z-index: 1000;
+                width: 100%;
+                left: 0;
+            }
+            #sidebarMenu.show {
+                display: block !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -208,7 +224,8 @@ $result = mysqli_query($conn, $sql);
     <div class="container-fluid">
         <div class="row">
 
-            <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3" id="sidebarMenu">
                 <h4 class="text-center mb-4">Admin Panel</h4>
 
                 <div class="nav flex-column">
@@ -217,13 +234,22 @@ $result = mysqli_query($conn, $sql);
                     <a href="courses.php" class="nav-link text-white mb-2">Manage Courses</a>
                     <a href="assignments.php" class="nav-link text-white mb-2">Manage Assignments</a>
                     <a href="results.php" class="nav-link text-white mb-2">Upload Results</a>
-                    <a href="notices.php" class="nav-link text-white mb-2">Post Notice</a>
+                    <a href="notices.php" class="nav-link text-white mb-2 active" style="background-color: rgba(255, 239, 179, 0.15); color: var(--butter) !important;">Post Notice</a>
                     <a href="fees.php" class="nav-link text-white mb-2">Manage Fees</a>
                     <a href="logout.php" class="nav-link text-danger">Logout</a>
                 </div>
             </div>
 
+            <!-- Main Content -->
             <div class="col-md-9 col-lg-10 p-4">
+
+                <!-- Mobile Hamburger Toggle Button -->
+                <div class="d-md-none mb-3">
+                    <button class="btn text-white px-3 py-2 rounded-3 shadow-sm" id="mobileMenuBtn" style="background-color: var(--green);">
+                        ☰ Menu
+                    </button>
+                </div>
+
                 <h2 class="mb-4">Post Notice</h2>
 
                 <?php if ($error !== ""): ?>
@@ -239,7 +265,7 @@ $result = mysqli_query($conn, $sql);
                 <?php endif; ?>
 
                 <div class="card shadow-sm mb-4">
-                    <div class="card-body">
+                    <div class="card-body p-4">
                         <h4 class="mb-3">Add New Notice</h4>
 
                         <form method="POST">
@@ -259,12 +285,12 @@ $result = mysqli_query($conn, $sql);
                 </div>
 
                 <div class="card shadow-sm">
-                    <div class="card-body">
+                    <div class="card-body p-4">
                         <h4 class="mb-3">All Notices</h4>
 
                         <?php if (mysqli_num_rows($result) > 0): ?>
                             <?php while ($notice = mysqli_fetch_assoc($result)): ?>
-                                <div class="card mb-3">
+                                <div class="card mb-3 border">
                                     <div class="card-body">
                                         <h5 class="card-title">
                                             <?php echo htmlspecialchars($notice["title"]); ?>
@@ -274,7 +300,7 @@ $result = mysqli_query($conn, $sql);
                                             <?php echo nl2br(htmlspecialchars($notice["content"])); ?>
                                         </p>
 
-                                        <p class="text-muted mb-2">
+                                        <p class="text-muted mb-3" style="font-size: 0.85rem;">
                                             Posted by: <?php echo htmlspecialchars($notice["posted_by"]); ?>
                                             | <?php echo htmlspecialchars($notice["created_at"]); ?>
                                         </p>
@@ -298,6 +324,16 @@ $result = mysqli_query($conn, $sql);
 
         </div>
     </div>
+<script>
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebarMenu = document.getElementById('sidebarMenu');
+
+    if (mobileMenuBtn && sidebarMenu) {
+        mobileMenuBtn.addEventListener('click', function() {
+            sidebarMenu.classList.toggle('show');
+        });
+    }
+</script>
 
 </body>
 </html>

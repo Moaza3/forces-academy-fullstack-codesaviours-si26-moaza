@@ -257,6 +257,20 @@ $assignments = mysqli_query($conn, "
             background: var(--green);
             border-radius: 4px;
         }
+
+        /* Mobile Toggle Responsive Styles */
+        @media (max-width: 768px) {
+            #sidebarMenu {
+                display: none;
+                position: absolute;
+                z-index: 1000;
+                width: 100%;
+                left: 0;
+            }
+            #sidebarMenu.show {
+                display: block !important;
+            }
+        }
     </style>
 </head>
 
@@ -266,7 +280,7 @@ $assignments = mysqli_query($conn, "
         <div class="row">
 
             <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3">
+            <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3" id="sidebarMenu">
                 <h4 class="text-center mb-4">Admin Panel</h4>
 
                 <div class="nav flex-column">
@@ -283,6 +297,14 @@ $assignments = mysqli_query($conn, "
 
             <!-- Main Content -->
             <div class="col-md-9 col-lg-10 p-4">
+                
+                <!-- Mobile Hamburger Toggle Button -->
+                <div class="d-md-none mb-3">
+                    <button class="btn text-white px-3 py-2 rounded-3 shadow-sm" id="mobileMenuBtn" style="background-color: var(--green);">
+                        ☰ Menu
+                    </button>
+                </div>
+
                 <h2 class="mb-4">Manage Assignments</h2>
 
                 <h4 class="mb-3 text-secondary" style="font-size: 1.25rem; font-weight: 600;">
@@ -362,6 +384,16 @@ $assignments = mysqli_query($conn, "
 
         </div>
     </div>
+    <script>
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebarMenu = document.getElementById('sidebarMenu');
+
+        if (mobileMenuBtn && sidebarMenu) {
+            mobileMenuBtn.addEventListener('click', function() {
+                sidebarMenu.classList.toggle('show');
+            });
+        }
+    </script>
 
 </body>
 

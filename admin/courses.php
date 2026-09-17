@@ -278,6 +278,20 @@ $result = mysqli_query($conn, $sql);
             background: var(--green);
             border-radius: 4px;
         }
+
+        /* Mobile Toggle Responsive Styles */
+        @media (max-width: 768px) {
+            #sidebarMenu {
+                display: none;
+                position: absolute;
+                z-index: 1000;
+                width: 100%;
+                left: 0;
+            }
+            #sidebarMenu.show {
+                display: block !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -285,7 +299,8 @@ $result = mysqli_query($conn, $sql);
     <div class="container-fluid">
         <div class="row">
 
-            <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3" id="sidebarMenu">
                 <h4 class="text-center mb-4">Admin Panel</h4>
 
                 <div class="nav flex-column">
@@ -301,6 +316,14 @@ $result = mysqli_query($conn, $sql);
             </div>
 
             <div class="col-md-9 col-lg-10 p-4">
+                
+                <!-- Mobile Hamburger Toggle Button -->
+                <div class="d-md-none mb-3">
+                    <button class="btn text-white px-3 py-2 rounded-3 shadow-sm" id="mobileMenuBtn" style="background-color: var(--green);">
+                        ☰ Menu
+                    </button>
+                </div>
+
                 <h2 class="mb-4">Manage Courses</h2>
 
                 <?php if ($error !== ""): ?>
@@ -414,6 +437,16 @@ $result = mysqli_query($conn, $sql);
 
         </div>
     </div>
+    <script>
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebarMenu = document.getElementById('sidebarMenu');
+
+        if (mobileMenuBtn && sidebarMenu) {
+            mobileMenuBtn.addEventListener('click', function() {
+                sidebarMenu.classList.toggle('show');
+            });
+        }
+    </script>
 
 </body>
 </html>

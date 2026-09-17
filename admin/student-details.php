@@ -4,12 +4,8 @@ if (!isset($_SESSION['student_id'])) {
     header("Location: login.php");
     exit;
 }
-
 require_once "config/db.php";
-
 $student_id = $_SESSION['student_id'];
-
-// Updated query to fetch only the courses enrolled by the logged-in student
 $query = "SELECT courses.* FROM courses 
           JOIN student_courses ON courses.id = student_courses.course_id 
           WHERE student_courses.student_id = ? 
@@ -41,41 +37,33 @@ $result = mysqli_stmt_get_result($stmt);
             font-family: 'Segoe UI', 'Poppins', sans-serif;
         }
 
-        .bg-dark {
-            background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%) !important;
+        /* Top Navbar Styling */
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .bg-dark h4 {
+        .navbar-custom .navbar-brand {
             color: var(--butter) !important;
             font-weight: 700;
             letter-spacing: 0.5px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 239, 179, 0.2);
         }
 
-        .bg-dark .nav-link {
-            border-radius: 8px;
-            padding: 10px 14px;
-            transition: all 0.25s ease;
+        .navbar-custom .nav-link {
+            color: #ffffff !important;
             font-weight: 500;
+            border-radius: 6px;
+            padding: 8px 12px !important;
+            transition: all 0.2s ease;
         }
 
-        .bg-dark .nav-link:hover {
+        .navbar-custom .nav-link:hover,
+        .navbar-custom .nav-link.active {
             background-color: rgba(255, 239, 179, 0.15);
             color: var(--butter) !important;
-            padding-left: 20px;
         }
 
-        .bg-dark .nav-link.active {
-            background-color: rgba(255, 239, 179, 0.2);
-            color: var(--butter) !important;
-        }
-
-        .bg-dark .nav-link.text-danger {
-            color: #ff6b6b !important;
-        }
-
-        .bg-dark .nav-link.text-danger:hover {
+        .navbar-custom .nav-link.text-danger:hover {
             background-color: rgba(255, 107, 107, 0.15);
             color: #ff8787 !important;
         }
@@ -129,92 +117,47 @@ $result = mysqli_stmt_get_result($stmt);
             border-radius: 12px;
             color: var(--text-dark);
         }
-
-        .mobile-toggle-btn {
-            display: none;
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 1050;
-            background: var(--green);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            width: 44px;
-            height: 44px;
-            font-size: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.25);
-            cursor: pointer;
-        }
-
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 1030;
-        }
-
-        .sidebar-overlay.show {
-            display: block;
-        }
-
-        @media (max-width: 991px) {
-            .mobile-toggle-btn {
-                display: block;
-            }
-
-            #appSidebar {
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-                z-index: 1040;
-            }
-
-            #appSidebar.sidebar-open {
-                transform: translateX(0);
-            }
-
-            #mainContent {
-                margin-left: 0 !important;
-                width: 100% !important;
-                padding-top: 75px !important;
-            }
-        }
     </style>
 </head>
 <body>
 
-    <button class="mobile-toggle-btn" onclick="document.getElementById('appSidebar').classList.toggle('sidebar-open'); document.getElementById('sidebarOverlay').classList.toggle('show');">&#9776;</button>
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="document.getElementById('appSidebar').classList.remove('sidebar-open'); this.classList.remove('show');"></div>
+    <!-- Top Menu Bar / Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top px-3 mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="dashboard.php">Student Portal</a>
+            <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav align-items-lg-center gap-1">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.php">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="courses.php">My Courses</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="assignment.php">Assignments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="result.php">My Results</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="notices.php">Notices</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="fees.php">Manage Fees</a>
+                    </li>
+                    <li class="nav-item ms-lg-2">
+                        <a class="nav-link text-danger" href="logout.php">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-    <div class="bg-dark text-white p-3 vh-100" id="appSidebar" style="width: 250px; position: fixed; left: 0; top: 0;">
-        <h4 class="text-center mb-4">Student Portal</h4>
-        <ul class="nav flex-column">
-            <li class="nav-item mb-2">
-                <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="courses.php" class="nav-link text-white fw-bold active">My Courses</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="assignment.php" class="nav-link text-white">Assignments</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="result.php" class="nav-link text-white">My Results</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a href="notices.php" class="nav-link text-white">Notices</a>
-            </li>
-            <li>
-                <a href="fees.php" class="nav-link text-white mb-2">Manage Fees</a>
-            </li>
-            <li class="nav-item mt-3">
-                <a href="logout.php" class="nav-link text-danger">Logout</a>
-            </li>
-        </ul>
-    </div>
-
-    <div class="p-4" id="mainContent" style="margin-left: 250px;">
+    <!-- Main Container -->
+    <div class="container mb-5">
         <h2 class="mb-4">My Courses</h2>
 
         <div class="row">
@@ -249,7 +192,6 @@ $result = mysqli_stmt_get_result($stmt);
             <?php endif; ?>
         </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
