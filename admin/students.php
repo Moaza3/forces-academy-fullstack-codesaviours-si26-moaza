@@ -77,33 +77,39 @@ if ($search !== "") {
             font-family: 'Segoe UI', 'Poppins', sans-serif;
         }
 
-        /* Top Navbar Styling */
-        .navbar-custom {
-            background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        /* Sidebar Styling */
+        .bg-dark {
+            background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%) !important;
         }
 
-        .navbar-custom .navbar-brand {
+        .bg-dark h4 {
             color: var(--butter) !important;
             font-weight: 700;
             letter-spacing: 0.5px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 239, 179, 0.2);
         }
 
-        .navbar-custom .nav-link {
-            color: #ffffff !important;
+        .bg-dark .nav-link {
+            border-radius: 8px;
+            padding: 10px 14px;
+            transition: all 0.25s ease;
             font-weight: 500;
-            border-radius: 6px;
-            padding: 8px 12px !important;
-            transition: all 0.2s ease;
+            color: #ffffff !important;
         }
 
-        .navbar-custom .nav-link:hover,
-        .navbar-custom .nav-link.active {
+        .bg-dark .nav-link:hover {
             background-color: rgba(255, 239, 179, 0.15);
             color: var(--butter) !important;
+            padding-left: 20px;
         }
 
-        .navbar-custom .nav-link.text-danger:hover {
+        .bg-dark .nav-link.text-danger {
+            color: #ff6b6b !important;
+            margin-top: 10px;
+        }
+
+        .bg-dark .nav-link.text-danger:hover {
             background-color: rgba(255, 107, 107, 0.15);
             color: #ff8787 !important;
         }
@@ -128,7 +134,7 @@ if ($search !== "") {
 
         .card {
             border: none !important;
-            border-radius: 14px !important;
+            border-radius: 16px !important;
             box-shadow: 0 4px 15px rgba(0,0,0,0.06);
             overflow: hidden;
         }
@@ -147,6 +153,7 @@ if ($search !== "") {
             border-color: var(--green) !important;
             border-radius: 0 8px 8px 0 !important;
             font-weight: 600;
+            padding: 10px 20px;
         }
 
         .btn-primary:hover {
@@ -209,144 +216,161 @@ if ($search !== "") {
             background: var(--green);
             border-radius: 4px;
         }
+
+        @media (max-width: 768px) {
+            #sidebarMenu {
+                display: none;
+                position: absolute;
+                z-index: 1000;
+                width: 100%;
+                left: 0;
+            }
+            #sidebarMenu.show {
+                display: block !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-light">
 
-    <!-- Top Menu Bar / Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-custom sticky-top px-3 mb-4">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="dashboard.php">Admin Panel</a>
-            <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav align-items-lg-center gap-1">
-                    <li class="nav-item">
-                        <a class="nav-link" href="dashboard.php">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="students.php">Students</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="courses.php">Courses</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="assignments.php">Assignments</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="results.php">Results</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="notices.php">Notices</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="fees.php">Fees</a>
-                    </li>
-                    <li class="nav-item ms-lg-2">
-                        <a class="nav-link text-danger" href="logout.php">Logout</a>
-                    </li>
-                </ul>
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3" id="sidebarMenu">
+            <h4 class="text-center mb-4">Admin Panel</h4>
+
+            <div class="nav flex-column">
+                <a href="dashboard.php" class="nav-link mb-2">Dashboard</a>
+                <a href="students.php" class="nav-link mb-2 active" style="background-color: rgba(255, 239, 179, 0.15); color: var(--butter) !important;">Manage Students</a>
+                <a href="courses.php" class="nav-link mb-2">Manage Courses</a>
+                <a href="assignments.php" class="nav-link mb-2">Manage Assignments</a>
+                <a href="results.php" class="nav-link mb-2">Upload Results</a>
+                <a href="notices.php" class="nav-link mb-2">Post Notice</a>
+                <a href="fees.php" class="nav-link mb-2">Manage Fees</a>
+                <a href="logout.php" class="nav-link text-danger">Logout</a>
             </div>
         </div>
-    </nav>
 
-    <!-- Main Container -->
-    <div class="container mb-5">
-        <h2 class="mb-4">Manage Students</h2>
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10 p-4">
 
-        <form method="GET" action="students.php" class="mb-4">
-            <div class="input-group">
-                <input
-                    type="text"
-                    name="search"
-                    class="form-control"
-                    placeholder="Search by name, email or roll number"
-                    value="<?php echo htmlspecialchars($search); ?>"
-                >
-                <button
-                    type="submit"
-                    class="btn btn-primary"
-                >
-                    Search
+            <!-- Mobile Hamburger Toggle Button -->
+            <div class="d-md-none mb-3">
+                <button class="btn text-white px-3 py-2 rounded-3 shadow-sm" id="mobileMenuBtn" style="background-color: var(--green);">
+                    ☰ Menu
                 </button>
-                <?php if ($search !== ""): ?>
-                    <a
-                        href="students.php"
-                        class="btn btn-secondary"
-                    >
-                        Clear
-                    </a>
-                <?php endif; ?>
             </div>
-        </form>
 
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <div class="table-responsive">
-                    <table class="table table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Roll Number</th>
-                                <th>Class</th>
-                                <th>Registered Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php if (mysqli_num_rows($result) > 0): ?>
-                            <?php while ($student = mysqli_fetch_assoc($result)): ?>
+            <h2 class="mb-4">Manage Students</h2>
+
+            <form method="GET" action="students.php" class="mb-4">
+                <div class="input-group">
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control"
+                        placeholder="Search by name, email or roll number"
+                        value="<?php echo htmlspecialchars($search); ?>"
+                    >
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Search
+                    </button>
+                    <?php if ($search !== ""): ?>
+                        <a
+                            href="students.php"
+                            class="btn btn-secondary d-flex align-items-center"
+                        >
+                            Clear
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </form>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        <?php echo htmlspecialchars($student["full_name"]); ?>
-                                    </td>
-                                    <td>
-                                        <?php echo htmlspecialchars($student["email"]); ?>
-                                    </td>
-                                    <td>
-                                        <?php echo htmlspecialchars($student["roll_number"]); ?>
-                                    </td>
-                                    <td>
-                                        <?php echo htmlspecialchars($student["class"]); ?>
-                                    </td>
-                                    <td>
-                                        <?php echo htmlspecialchars($student["created_at"]); ?>
-                                    </td>
-                                    <td>
-                                        <a
-                                            href="student-details.php?id=<?php echo $student["id"]; ?>"
-                                            class="btn btn-sm btn-info text-white"
-                                        >
-                                            View
-                                        </a>
-                                        <a
-                                            href="students.php?delete=<?php echo $student["id"]; ?>"
-                                            class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Are you sure you want to delete this student?');"
-                                        >
-                                            Delete
-                                        </a>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Roll Number</th>
+                                    <th>Class</th>
+                                    <th>Registered Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <?php if (mysqli_num_rows($result) > 0): ?>
+                                <?php while ($student = mysqli_fetch_assoc($result)): ?>
+                                    <tr>
+                                        <td>
+                                            <?php echo htmlspecialchars($student["full_name"]); ?>
+                                        </td>
+                                        <td>
+                                            <?php echo htmlspecialchars($student["email"]); ?>
+                                        </td>
+                                        <td>
+                                            <?php echo htmlspecialchars($student["roll_number"]); ?>
+                                        </td>
+                                        <td>
+                                            <?php echo htmlspecialchars($student["class"]); ?>
+                                        </td>
+                                        <td>
+                                            <?php echo htmlspecialchars($student["created_at"]); ?>
+                                        </td>
+                                        <td>
+                                            <a
+                                                href="student-details.php?id=<?php echo $student["id"]; ?>"
+                                                class="btn btn-sm btn-info text-white"
+                                            >
+                                                View
+                                            </a>
+                                            <a
+                                                href="students.php?delete=<?php echo $student["id"]; ?>"
+                                                class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Are you sure you want to delete this student?');"
+                                            >
+                                                Delete
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td
+                                        colspan="6"
+                                        class="text-center py-3"
+                                    >
+                                        No students found.
                                     </td>
                                 </tr>
-                            <?php endwhile; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td
-                                    colspan="6"
-                                    class="text-center py-3"
-                                >
-                                    No students found.
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                        </tbody>
-                    </table>
+                            <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
+
         </div>
+
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+
+<script>
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebarMenu = document.getElementById('sidebarMenu');
+
+    if (mobileMenuBtn && sidebarMenu) {
+        mobileMenuBtn.addEventListener('click', function() {
+            sidebarMenu.classList.toggle('show');
+        });
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
