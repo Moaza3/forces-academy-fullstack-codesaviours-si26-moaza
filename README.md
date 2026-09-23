@@ -2,32 +2,26 @@
 
 A full-stack Learning Management System (LMS) built with PHP and MySQL, developed during the Code Saviours Full Stack Internship. It provides students and administrators with a complete platform to manage courses, assignments, results, notices, fees, and timetables — all through role-based dashboards.
 
----
-
 ## 🌐 Live Demo
 
-**Website:** http://forcesacademy.xo.je/forces-academy-lms/
+**Website:** [forcesacademy.xo.je/forces-academy-lms](http://forcesacademy.xo.je/forces-academy-lms/)
 
 | Portal | Link |
 |---|---|
 | Student Login | [/login.php](http://forcesacademy.xo.je/forces-academy-lms/login.php) |
 | Admin Login | [/admin/login.php](http://forcesacademy.xo.je/forces-academy-lms/admin/login.php) |
 
----
-
 ## 📸 Screenshots
 
 | Student Dashboard | Admin Dashboard |
 |---|---|
-| ![Student Dashboard](screenshots/student-dashboard.png) | ![Admin Dashboard](screenshots/admin-dashboard.png) |
+| ![Student Dashboard](screenshots/Student%20dashboard.png) | ![Admin Dashboard](screenshots/Admin%20dashboard.png) |
 
 | My Courses | Timetable |
 |---|---|
-| ![Courses](screenshots/courses.png) | ![Timetable](screenshots/timetable.png) |
+| ![Courses](screenshots/courses.png) | ![Timetable](screenshots/Timetable.png) |
 
 > Replace the image paths above with the actual screenshot files stored in a `/screenshots` folder in your repo.
-
----
 
 ## 🛠️ Tech Stack
 
@@ -51,8 +45,6 @@ A full-stack Learning Management System (LMS) built with PHP and MySQL, develope
 
 **Hosting**
 - InfinityFree
-
----
 
 ## ✨ Features
 
@@ -89,8 +81,6 @@ A full-stack Learning Management System (LMS) built with PHP and MySQL, develope
 - Fully responsive interface (mobile, tablet, desktop)
 - Deployed and accessible online
 
----
-
 ## 🗄️ Database Schema
 
 Database name: `forces_academy_lms`
@@ -106,8 +96,6 @@ Database name: `forces_academy_lms`
 | `results` | Student results/grades |
 | `fees` | Student fee records |
 | `timetable` | Class schedule |
-
----
 
 ## 🚀 How to Run Locally
 
@@ -145,9 +133,7 @@ Open your browser and visit:
 http://localhost/forces-academy-lms/
 ```
 
----
-
 ## 👤 Built By
 
-**[Your Name]**
+**[Moaza]**
 Code Saviours — SI-26 | 2026
