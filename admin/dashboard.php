@@ -191,7 +191,7 @@ $total_notices = $notice_data["total_notices"];
             <div class="col-md-9 col-lg-10 p-4">
                 <div class="d-md-none mb-3">
                     <button class="btn text-white px-3 py-2 rounded-3 shadow-sm" id="mobileMenuBtn" style="background-color: var(--green);">
-                        ☰ Menu
+                        ☰
                     </button>
                 </div>
 
