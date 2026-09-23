@@ -94,7 +94,6 @@ if ($search !== "") {
             border-radius: 8px;
             padding: 10px 14px;
             transition: all 0.25s ease;
-            font-weight: 500;
             color: #ffffff !important;
         }
 
@@ -236,7 +235,6 @@ if ($search !== "") {
 <div class="container-fluid">
     <div class="row">
 
-        <!-- Sidebar -->
         <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3" id="sidebarMenu">
             <h4 class="text-center mb-4">Admin Panel</h4>
 
@@ -252,10 +250,8 @@ if ($search !== "") {
             </div>
         </div>
 
-        <!-- Main Content -->
         <div class="col-md-9 col-lg-10 p-4">
 
-            <!-- Mobile Hamburger Toggle Button -->
             <div class="d-md-none mb-3">
                 <button class="btn text-white px-3 py-2 rounded-3 shadow-sm" id="mobileMenuBtn" style="background-color: var(--green);">
                     ☰ Menu

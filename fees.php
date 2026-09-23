@@ -133,22 +133,63 @@ $result = mysqli_stmt_get_result($stmt);
             border-radius: 20px;
         }
 
+        .mobile-toggle-btn {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1050;
+            background: var(--green);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            width: 44px;
+            height: 44px;
+            font-size: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+            cursor: pointer;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1030;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
         @media (max-width: 991px) {
+            .mobile-toggle-btn {
+                display: block;
+            }
+
             .sidebar {
-                position: static;
-                width: 100%;
-                min-height: auto;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 1040;
+            }
+
+            .sidebar.sidebar-open {
+                transform: translateX(0);
             }
 
             .main-content {
-                margin-left: 0;
-                padding: 20px;
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding-top: 75px !important;
             }
         }
     </style>
 </head>
 
 <body>
+
+<button class="mobile-toggle-btn" onclick="document.querySelector('.sidebar').classList.toggle('sidebar-open'); document.getElementById('sidebarOverlay').classList.toggle('show');">&#9776;</button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="document.querySelector('.sidebar').classList.remove('sidebar-open'); this.classList.remove('show');"></div>
 
 <div class="sidebar p-3">
     <h4 class="text-center mb-4">Student Portal</h4>

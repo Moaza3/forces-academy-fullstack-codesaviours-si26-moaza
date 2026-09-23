@@ -37,7 +37,6 @@ $result = mysqli_stmt_get_result($stmt);
             font-family: 'Segoe UI', 'Poppins', sans-serif;
         }
 
-        /* Top Navbar Styling */
         .navbar-custom {
             background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -121,7 +120,6 @@ $result = mysqli_stmt_get_result($stmt);
 </head>
 <body>
 
-    <!-- Top Menu Bar / Navbar -->
     <nav class="navbar navbar-expand-lg navbar-custom sticky-top px-3 mb-4">
         <div class="container-fluid">
             <a class="navbar-brand" href="dashboard.php">Student Portal</a>
@@ -156,7 +154,6 @@ $result = mysqli_stmt_get_result($stmt);
         </div>
     </nav>
 
-    <!-- Main Container -->
     <div class="container mb-5">
         <h2 class="mb-4">My Courses</h2>
 

@@ -86,7 +86,6 @@ $result = mysqli_query(
             color: #1e293b;
         }
 
-        /* Top Navbar Styling matching other pages */
         .navbar-custom {
             background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -100,7 +99,6 @@ $result = mysqli_query(
 
         .navbar-custom .nav-link {
             color: #ffffff !important;
-            font-weight: 500;
             border-radius: 6px;
             padding: 8px 12px !important;
             transition: all 0.2s ease;

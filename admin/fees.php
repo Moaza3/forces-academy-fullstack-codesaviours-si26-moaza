@@ -112,7 +112,6 @@ $fees_result = mysqli_query($conn, $fees_sql);
             border-radius: 8px;
             padding: 10px 14px;
             transition: all 0.25s ease;
-            font-weight: 500;
         }
 
         .bg-dark .nav-link:hover {

@@ -106,7 +106,6 @@ $assignments = mysqli_query($conn, "
             border-radius: 8px;
             padding: 10px 14px;
             transition: all 0.25s ease;
-            font-weight: 500;
         }
 
         .bg-dark .nav-link:hover {
@@ -257,8 +256,6 @@ $assignments = mysqli_query($conn, "
             background: var(--green);
             border-radius: 4px;
         }
-
-        /* Mobile Toggle Responsive Styles */
         @media (max-width: 768px) {
             #sidebarMenu {
                 display: none;

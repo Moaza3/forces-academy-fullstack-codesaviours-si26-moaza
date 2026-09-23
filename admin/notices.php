@@ -98,7 +98,6 @@ $result = mysqli_query($conn, $sql);
             border-radius: 8px;
             padding: 10px 14px;
             transition: all 0.25s ease;
-            font-weight: 500;
         }
 
         .bg-dark .nav-link:hover {
@@ -204,7 +203,6 @@ $result = mysqli_query($conn, $sql);
             border-radius: 4px;
         }
 
-        /* Mobile Toggle Responsive Styles */
         @media (max-width: 768px) {
             #sidebarMenu {
                 display: none;
@@ -224,7 +222,6 @@ $result = mysqli_query($conn, $sql);
     <div class="container-fluid">
         <div class="row">
 
-            <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3" id="sidebarMenu">
                 <h4 class="text-center mb-4">Admin Panel</h4>
 

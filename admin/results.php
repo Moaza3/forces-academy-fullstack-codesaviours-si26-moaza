@@ -10,7 +10,6 @@ if (!isset($_SESSION["admin_id"]) || $_SESSION["admin_role"] !== "admin") {
 $error = "";
 $success = "";
 
-// Handle form submission
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $student_id  = (int) $_POST["student_id"];
     $course_id   = (int) $_POST["course_id"];
@@ -64,15 +63,12 @@ if (isset($_GET["success"])) {
     $success = "Result uploaded successfully.";
 }
 
-// Fetch students for dropdown
 $students_query = "SELECT id, full_name FROM students ORDER BY full_name ASC";
 $students_result = mysqli_query($conn, $students_query);
 
-// Fetch courses for dropdown
 $courses_query = "SELECT id, course_name FROM courses ORDER BY course_name ASC";
 $courses_result = mysqli_query($conn, $courses_query);
 
-// Fetch recent results
 $results_query = "SELECT 
                     results.id,
                     students.full_name,
@@ -114,7 +110,6 @@ if (!$results) {
             font-family: 'Segoe UI', 'Poppins', sans-serif;
         }
 
-        /* Sidebar Styling */
         .bg-dark {
             background: linear-gradient(180deg, var(--green) 0%, var(--green-dark) 100%) !important;
         }
@@ -131,7 +126,6 @@ if (!$results) {
             border-radius: 8px;
             padding: 10px 14px;
             transition: all 0.25s ease;
-            font-weight: 500;
             color: #ffffff !important;
         }
 
@@ -254,7 +248,6 @@ if (!$results) {
 <div class="container-fluid">
     <div class="row">
 
-        <!-- Sidebar -->
         <div class="col-md-3 col-lg-2 bg-dark text-white min-vh-100 p-3" id="sidebarMenu">
             <h4 class="text-center mb-4">Admin Panel</h4>
 
