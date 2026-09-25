@@ -15,7 +15,6 @@ $student_id = (int)$_SESSION['student_id'];
 $success_msg = "";
 $error_msg = "";
 
-// Fetch Current Student Details
 $stmt = mysqli_prepare($conn, "SELECT id, full_name, email, roll_number, class, password FROM students WHERE id = ?");
 if (!$stmt) {
     die("Prepare Error: " . mysqli_error($conn));
@@ -31,7 +30,6 @@ if (!$student) {
     die("Student record not found for ID: " . $student_id);
 }
 
-// 1. Handle Profile Update
 if (isset($_POST['update_profile'])) {
     $full_name = trim($_POST['full_name']);
     $email = trim($_POST['email']);
@@ -54,7 +52,6 @@ if (isset($_POST['update_profile'])) {
     }
 }
 
-// 2. Handle Password Change
 if (isset($_POST['change_password'])) {
     $current_password = $_POST['current_password'];
     $new_password = $_POST['new_password'];
@@ -65,7 +62,6 @@ if (isset($_POST['change_password'])) {
     } elseif ($new_password !== $confirm_password) {
         $error_msg = "New password and Confirm password do not match.";
     } else {
-        // Secure verify using password_verify OR plain text fallback (for old DB records)
         $password_matches = password_verify($current_password, $student['password']) || ($current_password === $student['password']);
 
         if ($password_matches) {
@@ -74,7 +70,7 @@ if (isset($_POST['change_password'])) {
             mysqli_stmt_bind_param($pass_stmt, "si", $hashed_password, $student_id);
 
             if (mysqli_stmt_execute($pass_stmt)) {
-                $student['password'] = $hashed_password; // Update variable in memory
+                $student['password'] = $hashed_password;
                 $success_msg = "Password changed successfully!";
             } else {
                 $error_msg = "Failed to update password.";
@@ -85,6 +81,8 @@ if (isset($_POST['change_password'])) {
         }
     }
 }
+
+$initial = strtoupper(substr($student['full_name'] ?? 'S', 0, 1));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -224,39 +222,6 @@ if (isset($_POST['change_password'])) {
             border-color: var(--green-dark) !important;
         }
 
-        .btn-success {
-            background-color: var(--green) !important;
-            border-color: var(--green) !important;
-        }
-
-        .btn-success:hover {
-            background-color: var(--green-dark) !important;
-            border-color: var(--green-dark) !important;
-        }
-
-        .btn-warning {
-            background-color: var(--butter) !important;
-            border-color: var(--butter) !important;
-            color: var(--text-dark) !important;
-        }
-
-        .btn-warning:hover {
-            background-color: #ffe58f !important;
-            border-color: #ffe58f !important;
-        }
-
-        .btn-info {
-            background-color: var(--butter) !important;
-            border-color: var(--butter) !important;
-            color: var(--text-dark) !important;
-        }
-
-        .btn-info:hover {
-            background-color: #ffe58f !important;
-            border-color: #ffe58f !important;
-            color: var(--text-dark) !important;
-        }
-
         .btn-outline-secondary {
             border-radius: 8px !important;
         }
@@ -270,18 +235,6 @@ if (isset($_POST['change_password'])) {
             border-radius: 10px;
         }
 
-        .alert-info {
-            background-color: var(--butter);
-            border: none;
-            border-radius: 12px;
-            color: var(--text-dark);
-        }
-
-        .alert-info .alert-heading {
-            color: var(--green-dark);
-            font-weight: 700;
-        }
-
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -291,18 +244,99 @@ if (isset($_POST['change_password'])) {
             border-radius: 4px;
         }
 
-        .card-header.bg-primary {
-            background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%) !important;
-            border-bottom: 3px solid var(--butter);
+        /* Profile header banner */
+        .profile-banner {
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+            border-radius: 16px;
+            padding: 30px 32px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            box-shadow: 0 8px 20px rgba(1, 62, 55, 0.18);
         }
 
-        .card-header.bg-dark {
-            background: linear-gradient(135deg, var(--green-dark) 0%, #000 100%) !important;
-            border-bottom: 3px solid var(--butter);
+        .profile-avatar {
+            width: 76px;
+            height: 76px;
+            min-width: 76px;
+            border-radius: 50%;
+            background: var(--butter);
+            color: var(--green-dark);
+            font-size: 32px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid rgba(255,255,255,0.3);
         }
 
-        .card-header h5 {
+        .profile-banner h3 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .profile-banner p {
+            margin: 0;
+            opacity: 0.85;
+            font-size: 0.92rem;
+        }
+
+        /* Read-only info rows */
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 13px 0;
+            border-bottom: 1px solid #eef1f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #8a9a97;
+        }
+
+        .info-value {
             font-weight: 600;
+            color: var(--text-dark);
+            text-align: right;
+        }
+
+        .section-card-header {
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #eef1f0;
+        }
+
+        .section-card-header h5 {
+            margin: 0;
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        .toggle-btn {
+            background: transparent;
+            border: 1px solid var(--green);
+            color: var(--green);
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-btn:hover {
+            background: var(--green);
+            color: white;
         }
 
         .mobile-toggle-btn {
@@ -354,6 +388,21 @@ if (isset($_POST['change_password'])) {
                 width: 100% !important;
                 padding-top: 75px !important;
             }
+
+            .profile-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .info-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .info-value {
+                text-align: left;
+            }
         }
     </style>
 
@@ -363,7 +412,6 @@ if (isset($_POST['change_password'])) {
     <button class="mobile-toggle-btn" onclick="document.getElementById('appSidebar').classList.toggle('sidebar-open'); document.getElementById('sidebarOverlay').classList.toggle('show');">&#9776;</button>
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="document.getElementById('appSidebar').classList.remove('sidebar-open'); this.classList.remove('show');"></div>
 
-    <!-- Sidebar -->
     <div class="bg-dark text-white p-3 vh-100" id="appSidebar" style="width: 250px; position: fixed; left: 0; top: 0;">
         <h4 class="text-center mb-4">Student Portal</h4>
         <ul class="nav flex-column">
@@ -379,7 +427,6 @@ if (isset($_POST['change_password'])) {
         </ul>
     </div>
 
-    <!-- Main Content Area -->
     <div class="p-4" id="mainContent" style="margin-left: 250px; width: calc(100% - 250px);">
         <h2 class="mb-4">Student Profile</h2>
 
@@ -397,59 +444,101 @@ if (isset($_POST['change_password'])) {
             </div>
         <?php endif; ?>
 
+        <div class="profile-banner mb-4">
+            <div class="profile-avatar"><?php echo htmlspecialchars($initial); ?></div>
+            <div>
+                <h3><?php echo htmlspecialchars($student['full_name'] ?? 'Student'); ?></h3>
+                <p>Roll No: <?php echo htmlspecialchars($student['roll_number'] ?? 'N/A'); ?> &nbsp;•&nbsp; Class: <?php echo htmlspecialchars($student['class'] ?? 'N/A'); ?></p>
+            </div>
+        </div>
+
         <div class="row g-4">
-            <!-- Personal Info Card -->
-            <div class="col-md-6">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title mb-0">Personal Details</h5>
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="section-card-header">
+                        <h5>Personal Details</h5>
+                        <button type="button" class="toggle-btn" data-bs-toggle="collapse" data-bs-target="#editProfileForm">
+                            Edit Profile
+                        </button>
                     </div>
+
                     <div class="card-body">
-                        <form method="POST" action="profile.php">
-                            <div class="mb-3">
-                                <label class="form-label text-muted">Roll Number</label>
-                                <input type="text" class="form-control" value="<?php echo htmlspecialchars($student['roll_number'] ?? 'N/A'); ?>" disabled>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label text-muted">Class</label>
-                                <input type="text" class="form-control" value="<?php echo htmlspecialchars($student['class'] ?? 'N/A'); ?>" disabled>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Full Name</label>
-                                <input type="text" name="full_name" class="form-control" value="<?php echo htmlspecialchars($student['full_name'] ?? ''); ?>" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Email Address</label>
-                                <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($student['email'] ?? ''); ?>" required>
-                            </div>
-                            <button type="submit" name="update_profile" class="btn btn-primary">Save Changes</button>
-                        </form>
+
+                        <div class="info-row">
+                            <span class="info-label">Roll Number</span>
+                            <span class="info-value"><?php echo htmlspecialchars($student['roll_number'] ?? 'N/A'); ?></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Class</span>
+                            <span class="info-value"><?php echo htmlspecialchars($student['class'] ?? 'N/A'); ?></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Full Name</span>
+                            <span class="info-value"><?php echo htmlspecialchars($student['full_name'] ?? 'N/A'); ?></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email Address</span>
+                            <span class="info-value"><?php echo htmlspecialchars($student['email'] ?? 'N/A'); ?></span>
+                        </div>
+
+                        <div class="collapse mt-4" id="editProfileForm">
+                            <hr>
+                            <form method="POST" action="profile.php">
+                                <div class="mb-3">
+                                    <label class="form-label">Full Name</label>
+                                    <input type="text" name="full_name" class="form-control" value="<?php echo htmlspecialchars($student['full_name'] ?? ''); ?>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Email Address</label>
+                                    <input type="email" name="email" class="form-control" value="<?php echo htmlspecialchars($student['email'] ?? ''); ?>" required>
+                                </div>
+                                <button type="submit" name="update_profile" class="btn btn-primary">Save Changes</button>
+                            </form>
+                        </div>
+
                     </div>
                 </div>
             </div>
 
-            <!-- Password Change Card -->
-            <div class="col-md-6">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-dark text-white">
-                        <h5 class="card-title mb-0">Change Password</h5>
+            <div class="col-lg-6">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="section-card-header">
+                        <h5>Security</h5>
+                        <button type="button" class="toggle-btn" data-bs-toggle="collapse" data-bs-target="#changePasswordForm">
+                            Change Password
+                        </button>
                     </div>
+
                     <div class="card-body">
-                        <form method="POST" action="profile.php">
-                            <div class="mb-3">
-                                <label class="form-label">Current Password</label>
-                                <input type="password" name="current_password" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">New Password</label>
-                                <input type="password" name="new_password" class="form-control" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Confirm New Password</label>
-                                <input type="password" name="confirm_password" class="form-control" required>
-                            </div>
-                            <button type="submit" name="change_password" class="btn btn-warning">Update Password</button>
-                        </form>
+
+                        <div class="info-row">
+                            <span class="info-label">Password</span>
+                            <span class="info-value">••••••••</span>
+                        </div>
+                        <p class="text-muted mt-3 mb-0" style="font-size: 0.9rem;">
+                            Keep your account secure by using a strong password and updating it regularly.
+                        </p>
+
+                        <!-- Collapsible Password Form -->
+                        <div class="collapse mt-4" id="changePasswordForm">
+                            <hr>
+                            <form method="POST" action="profile.php">
+                                <div class="mb-3">
+                                    <label class="form-label">Current Password</label>
+                                    <input type="password" name="current_password" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">New Password</label>
+                                    <input type="password" name="new_password" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Confirm New Password</label>
+                                    <input type="password" name="confirm_password" class="form-control" required>
+                                </div>
+                                <button type="submit" name="change_password" class="btn btn-primary">Update Password</button>
+                            </form>
+                        </div>
+
                     </div>
                 </div>
             </div>
